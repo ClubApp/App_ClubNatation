@@ -1,0 +1,23 @@
+{
+  "name": "app_clubnatation",
+  "version": "1.0.0",
+  "description": "App dedicated to managememberaccess totheir french swimming club.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ClubApp/App_ClubNatation.git"
+  },
+  "keywords": [
+    "app",
+    "club"
+  ],
+  "author": "Julien Goyet",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ClubApp/App_ClubNatation/issues"
+  },
+  "homepage": "https://github.com/ClubApp/App_ClubNatation#readme"
+}
