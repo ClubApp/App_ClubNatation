@@ -8,8 +8,10 @@ var session = require('express-session');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
+var webSocket = require('./routes/webSocket');
 
 var app = express();
+var expressWs = require('express-ws')(app);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -23,11 +25,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 //app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+// websocket
+app.use("/ws-stuff", webSocket);
+
 
 // essai management de session
-var sess;
 app.get('/',function(req,res){
-  sess = req.session;
+  var sess = req.session;
   if(sess.email) {
     res.redirect('/logged');
   }
@@ -37,7 +41,7 @@ app.get('/',function(req,res){
 });
 
 app.post('/login',function(req,res){
-  sess = req.session;
+  var sess = req.session;
 //In this we are assigning email to sess.email variable.
 //email comes from HTML page.
   sess.email=req.body.email;
@@ -45,7 +49,7 @@ app.post('/login',function(req,res){
 });
 
 app.get('/logged',function(req,res){
-  sess = req.session;
+  var sess = req.session;
   if(sess.email) {
    res.write('<h1>Hello '+sess.email+'</h1>');
    res.end('<a href="/logout">Logout</a>');
