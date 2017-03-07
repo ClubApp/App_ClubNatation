@@ -8,11 +8,20 @@
     <header>
       <title>
         <%= title %>
-      </title>      
+      </title>
     </header>
 
-    <input type="text" size="40" placeholder="Type your email" id="email"><br />
-    <input type="password" size="40" placeholder="Type your password" id="password"><br />
-    <input type="button" value="Submit" id="submit">
+    <h1>Choose an action.</h1>
+    <button id="login" type="button" title="Simulate login">
+      Simulate login
+    </button>
+    <button id="logout" type="button" title="Simulate logout">
+      Simulate logout
+    </button>
+    <button id="wsButton" type="button" title="Open WebSocket connection">
+      Open WebSocket connection
+    </button>
+    <pre id="messages" style="height: 400px; overflow: scroll"></pre>
+    <script src="./javascripts/clientApp.js"></script>
 </body>
 </html>

@@ -8,7 +8,7 @@ var session = require('express-session');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
-var webSocket = require('./routes/webSocket');
+//var webSocket = require('./routes/webSocket');
 
 var app = express();
 var expressWs = require('express-ws')(app);
@@ -23,10 +23,22 @@ app.use(logger('dev'));
 app.use(session({secret: 'sophielabat',resave: true, saveUninitialized: true}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.ws('/echo', function (ws, req)  {
+  console.log("New connection has opened!");
+    ws.on('message', function(msg) {
+        ws.send(msg);
+    });
+
+    ws.on('close', function()  {
+        console.log('WebSocket was closed');
+    });
+});
 //app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 // websocket
-app.use("/ws-stuff", webSocket);
+
+
+//app.use("/ws-stuff", webSocket);
 
 
 // essai management de session
@@ -51,8 +63,7 @@ app.post('/login',function(req,res){
 app.get('/logged',function(req,res){
   var sess = req.session;
   if(sess.email) {
-   res.write('<h1>Hello '+sess.email+'</h1>');
-   res.end('<a href="/logout">Logout</a>');
+   res.render('index', { title: 'indexEjs' });
   } else {
     res.write('  <h1>Please login first.</h1> ');
     res.end('<a href="/">Login</a>');
