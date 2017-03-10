@@ -6,14 +6,15 @@
   </script>
 <script>
 $(document).ready(function(){
-    var email,pass;
+    var email,name,firstname;
     $("#submit").click(function(){
-        email=$("#email").val();
+        name=$("#name").val();
+        firstname=$("#firstname").val();
         pass=$("#password").val();
         /*
         * Perform some validation here.
         */
-        $.post("http://localhost:3000/login",{email:email,pass:pass},function(data){
+        $.post("http://localhost:3000/login",{name:name,firstname:firstname,pass:pass},function(data){
             if(data==='done')
             {
                 window.location.href="/logged";
@@ -26,7 +27,8 @@ $(document).ready(function(){
 <body class="container">
 
 
-    <input type="text" size="40" placeholder="Type your email" id="email"><br />
+    <input type="text" size="40" placeholder="Type your name" id="name"><br />
+    <input type="text" size="40" placeholder="Type your first name" id="firstname"><br />
     <input type="password" size="40" placeholder="Type your password" id="password"><br />
     <input type="button" value="Submit" id="submit">
 </body>
