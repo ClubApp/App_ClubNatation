@@ -49,7 +49,7 @@ var addAppRoutes = function(app){
     var sess = req.session;
   //In this we are assigning email to sess.email variable.
   //email comes from HTML page.
-    sess.name=req.body.name;
+    sess.name=req.body.name.toUpperCase();
     sess.firstname=req.body.firstname;
     res.end('done');
   });

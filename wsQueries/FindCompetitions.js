@@ -13,7 +13,7 @@ var createCmd = function(args,callBack){
     }
   };
 
-  var FindCompetitionCmd = new Command.theClass({id:'sumup'}, 'Competitions', http_options,callBack);
+  var FindCompetitionCmd = new Command.theClass({id:'sumup'}, 'eventsSumUp', http_options,callBack);
 
   FindCompetitionCmd.format = function(domElements){
     var selectContent = domElements[0];
@@ -26,7 +26,8 @@ var createCmd = function(args,callBack){
       var value = curElement.getAttribute("value");
       if (value !== null) {
         var newCompet = {};
-        newCompet.id = value;
+        console.log('FindCompetitionCmd.format '+value);
+        newCompet.id = parseInt(value);
         newCompet.description = curElement.textContent;
         objCompets.push(newCompet);
       }

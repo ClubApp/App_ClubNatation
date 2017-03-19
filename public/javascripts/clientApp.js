@@ -24,7 +24,7 @@
   };
 
   send.onclick = function()  {
-    ws.send('{"function" : "FindRecords"}');
+    ws.send('{"action":"get", "query":"records"}');
   };
 
   logout.onclick = function()  {

@@ -1,4 +1,5 @@
-
+var DB = require('./DataBaseAccess.js');
+DB.load();
 if (process.argv.length < 3) {
   console.error("type args");
   var truc;

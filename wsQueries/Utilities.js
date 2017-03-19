@@ -35,6 +35,10 @@ Utils.GetData = function (NameFile, callBack) {
  }
 };
 
+Utils.GetDataSync = function (NameFile) {
+  return fs.readFileSync(NameFile, 'utf8');
+};
+
 Utils.mkDirectory = function (NameDir, callBack) {
  if (!fs.exists(NameDir)){
    fs.mkdir(NameDir, callBack);

@@ -14,7 +14,10 @@ var Command = function (input, tableName, httpOptions, callBack){
       if (i>0){
         this.id +='%20';
       }
-      this.id += input.args[i].toLowerCase();
+      var toAdd = input.args[i];
+      if (toAdd.toLowerCase!==undefined)
+         toAdd= toAdd.toLowerCase();
+      this.id += toAdd;
     }
   }
   else{
@@ -26,17 +29,23 @@ var Command = function (input, tableName, httpOptions, callBack){
     this.httpOptions.request.path+=this.id;
   }
   this.tableName = tableName;
-  this.callBack = callBack!==undefined?callBack:this.dumpResult.bind(this);
+  this.callBackResult = callBack!==undefined?callBack:this.dumpResult.bind(this);
 };
 
-Command.prototype.dumpResult = function(result,err){
-   console.log(result);
+Command.prototype.dumpResult = function(object,err){
+   console.log(JSON.stringify(object));
 };
 
 Command.prototype.callBack = function (result) {
+
   fileContent = this.format(result);
-  DB[this.tableName].storeData(this.id,fileContent);
-  this.callBack(fileContent);
+
+  var obj = {};
+  if (fileContent!==''){
+    obj = JSON.parse(fileContent);
+    DB[this.tableName].storeData(obj.id?obj.id:this.id,obj);
+  }
+  this.callBackResult(obj);
 };
 
 
@@ -45,7 +54,13 @@ Command.prototype.resfreshDB = function(){
 };
 
 Command.prototype.run  = function(callBack){
-  DB[this.tableName].getData(this.id, {callBackYes : this.callBack, callBackNo : this.resfreshDB.bind(this)});
+  var object = DB[this.tableName].getData(this.id);
+  if (object === undefined){
+    this.resfreshDB();
+  }
+  else {
+    this.callBackResult(object);
+  }
 };
 
 exports.theClass = Command;

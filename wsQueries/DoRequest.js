@@ -10,6 +10,7 @@ myRequester.execute = function (options) {
       str += chunk;
     });
     response.on('end', function () {
+
       if (options.treatment.engine == 'dom') {
         if (DOM===undefined){
           DOM = require('./DomParser.js');
