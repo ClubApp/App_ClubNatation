@@ -67,7 +67,7 @@ callBack2.callBackYes = function(data){
   localCallBack();
 };
 
-//utils.fileAccessor.GetData('./wsQueries/fileDataBase/eventsSumUp.json', callBack2);
+utils.fileAccessor.GetData('./wsQueries/fileDataBase/eventsSumUp.json', callBack2);
 
 var callBack3 = {};
 callBack3.callBackNo = function(){
@@ -101,4 +101,4 @@ callBack3.callBackYes = function(data){
   localCallBack();
 };
 
-utils.fileAccessor.GetData('./wsQueries/fileDataBase/users.json', callBack3);
+//utils.fileAccessor.GetData('./wsQueries/fileDataBase/users.json', callBack3);

@@ -100,11 +100,11 @@ var createCmd = function(args,callBack){
     var theStr = domElements[index].textContent;
     //console.log('FindCompetitionCmd.format '+this.id);
     //console.log('FindCompetitionCmd.format '+theStr);
-    if (theStr.indexOf(nages.NagesDetail[0])==-1){
+    if (theStr.indexOf(nages.NagesBigDetail[0])==-1){
       index = 3;
     }
     theStr = domElements[index].textContent;
-    if (theStr.indexOf(nages.NagesDetail[0])==-1){
+    if (theStr.indexOf(nages.NagesBigDetail[0])==-1){
       index = 4;
     }
   //  console.log('FindCompetitionCmd.format '+index);
@@ -122,11 +122,11 @@ var createCmd = function(args,callBack){
         var curNage = LinesNage[i];
         var NomNage = curNage.children[0].textContent;
         var bNage = false;
-        for (j=0;j<nages.NagesDetail.length;j++){
+        for (j=0;j<nages.NagesBigDetail.length;j++){
           if (NomNage.indexOf('Relai')>-1){
             continue;
           }
-          if (NomNage.indexOf(nages.NagesDetail[j])>-1){
+          if (NomNage.indexOf(nages.NagesBigDetail[j])>-1){
             PropNage = nages.Nages[j];
             bNage = true;
             break;
