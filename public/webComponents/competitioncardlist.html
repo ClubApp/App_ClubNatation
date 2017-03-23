@@ -1,0 +1,36 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../bower_components/iron-scroll-threshold/iron-scroll-threshold.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
+<link href="competitioncard.html" rel="import">
+<dom-module id="competition-card-list">
+  <template id="competition-card-content">
+    <iron-list id="list" items="[[competitions]]" as="competition" scroll-target="html">
+      <template>
+        <div class="competitionItem">
+          <competition-card id="[[competition.id]]" class="competitioncard" competitiondata="[[competition]]"> </competition-card >
+        </div>
+      </template>
+    </iron-list>
+    <div class="loadingIndicator">
+      <paper-spinner active="{{loadingCompetitions}}">Loading </paper-spinner>
+    </div>
+  </template>
+  <script>
+  Polymer({
+    is: 'competition-card-list',
+    properties: {
+      competitions : Object
+    },
+    attached: function() {
+      if (!this._initialized){
+        var request =  {action : 'get', table : 'events', filter :{}};
+        var query = { requester : this, property : 'competitions', request :request };
+        this.fire('query', query);
+        this._initialized = true;
+      }
+    }
+  });
+
+  </script>
+</dom-module>

@@ -1,0 +1,38 @@
+{
+  "name": "competition-card",
+  "authors": [
+    "ClubApp <clubappnatation@gmail.com>"
+  ],
+  "description": "competiton card",
+  "main": "competition-card.html",
+  "keywords": [
+    "competition",
+    "card"
+  ],
+  "license": "MIT",
+  "homepage": "none",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "iron-list": "^1.4.3",
+    "iron-ajax": "^1.4.3",
+    "paper-ui-elements": "PolymerElements/paper-ui-elements",
+    "iron-icons": "^1.2.0",
+    "paper-checkbox": "^1.4.2",
+    "iron-form": "^1.1.4",
+    "iron-scroll-threshold": "^1.0.2",
+    "app-layout": "^0.10.7",
+    "app-route": "*",
+    "iron-pages": "^1.0.8",
+    "app-elements": "^0.10.1"
+  },
+  "resolutions": {
+    "polymer": "^1.2.4",
+    "app-route": "^0.9.0"
+  }
+}

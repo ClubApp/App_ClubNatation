@@ -15,6 +15,21 @@ table.prototype.getData = function(id){
   }
   return obj;
 };
+table.prototype.getAllData = function(filter){
+  var obj = [];
+  var length, i;
+  if(filter!==undefined && filter.properties!==undefined ) {
+    length = filter.properties.length;
+  }
+  for (var id in this._content){
+    var filteredObj= {};
+    for (i=0;i<length;i++){
+      filteredObj[filter.properties[i]] = this._content[id][filter.properties[i]];
+    }
+    obj.push(filteredObj);
+  }
+  return obj;
+};
 table.prototype.getDataWithFilter = function(filter){
   var obj;
   for (var id in this._content){

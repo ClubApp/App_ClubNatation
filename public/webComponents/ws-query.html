@@ -1,0 +1,53 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<dom-module id="ws-query">
+  <template>
+  </template>
+  <script>
+    Polymer({
+      is: 'ws-query',
+      // begin - base implementation based on ajax
+      properties : {
+        incomingQuery : {
+          type : Object,
+          observer : 'postQuery'
+        }
+      },
+      // end - base implementation based on ajax
+      storePendingQuery : function(inputQuery) {
+         if (!this._pendingQueries){
+           this._pendingQueries = {};
+           this._queriesCurIdent = 1978;
+         }
+         var curId = this._queriesCurIdent++;
+         var pendingQuery = {};
+         pendingQuery._requester = inputQuery.requester;
+         pendingQuery._requesterProperty = inputQuery.property;
+         this._pendingQueries[curId] = pendingQuery;
+         return curId;
+      },
+      postQuery : function(inputQuery) {
+         var oId = this.storePendingQuery(inputQuery);
+         var request = inputQuery.request;
+         var serverQuery = { _requestId : oId, _request : request};
+         this._websocket.send(JSON.stringify(serverQuery));
+      },
+      onAnswer : function(msg){
+        var answer = JSON.parse(msg);
+        var pendingQuery = this._pendingQueries[answer._requestId];
+        this._pendingQueries[answer._requestId] = undefined;
+        var requester = pendingQuery._requester;
+        requester[pendingQuery._requesterProperty] = answer._result;
+      },
+      ready : function(){
+        var me = this;
+        this._websocket = new WebSocket('ws://localhost:3000/echo');
+        this._websocket.onerror =  function(){console.log('WebSocket error');} ;
+        this._websocket.onopen =  function(){console.log('WebSocket connected');} ;
+        this._websocket.onclose =  function(){console.log('WebSocket closed');} ;
+        this._websocket.onmessage =  function(msg){
+          me.onAnswer(msg.data);
+        };
+      }
+    });
+  </script>
+</dom-module>

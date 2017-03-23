@@ -1,0 +1,154 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="inscriptionform.html">
+<dom-module id="competition-card">
+  <template>
+  <style is="custom-style">
+  iron-icon {
+    color: green;
+  }
+  paper-card {
+    width: 100%;
+    --paper-card-header-image: {height: 75px};
+  }
+  .horizontal {
+    @apply(--layout-horizontal);
+  }
+  .justified {
+    @apply(--layout-justified);
+  }
+  .white {
+    --paper-card-header-color: white;
+
+  }
+  .amber {
+    background: var(--paper-amber-900);
+  }
+  .lime {
+    background: var(--paper-lime-500);
+  }
+  .cyan {
+    background: var(--paper-cyan-500);
+  }
+  .dark {
+    background: var(--paper-blue-grey-500);
+  }
+  paper-card.dark, paper-card.amber, paper-card.lime, paper-card.cyan {
+    color: white;
+    --paper-card-header-color: white;
+  }
+  paper-icon-button {
+    color: var(--paper-grey-600);
+  }
+  paper-icon-button.white {
+    color: white !important;
+  }
+</style>
+  <!--iron-ajax url="[[competitionfile]]" last-response="{{data}}" auto></iron-ajax-->
+  <paper-card heading="[[competitiondata.nom]]" image="../images/test.jpg" alt="Sailboat Harbor" class="white">
+    <div class="card-content">
+      <iron-icon id="participationicon" icon={{viewicon}}></iron-icon>
+      [[competitiondata.date]]
+    </div>
+    <div class="card-actions">
+      <paper-button id="participationbutton" >[[viewbutton]]</paper-button>
+      <paper-button >Participants</paper-button>
+      <paper-icon-button icon="icons:arrow-drop-down" title="more info" onclick="_toggle(event)" style="float:right;">
+      </paper-icon-button>
+      <iron-collapse id="participer" style="width:100%;">
+        <inscription-form id="inscription" inscriptiondata="[[epreuves]]"></inscription-form>
+      </iron-collapse>
+      <iron-collapse id="more-info" style="width:100%;">
+        [[competitiondata.details]]
+      </iron-collapse>
+      <script>
+       //icons:check-box-outline-blank
+        //icons:check-box
+        function _toggle(event) {
+          var Button = Polymer.dom(event).localTarget;
+          var Parent = Polymer.dom(Button).parentNode;
+          var moreInfo = Polymer.dom(Parent).querySelector('#more-info');
+          iconButton.icon = moreInfo.opened ? 'icons:arrow-drop-down'
+                                            : 'icons:arrow-drop-up';
+          moreInfo.toggle();
+        }
+        /*function _toggleParticiper(event) {
+          var Button = Polymer.dom(event).localTarget;
+          var Parent = Polymer.dom(Button).parentNode;
+          var moreInfo = Polymer.dom(Parent).querySelector('#participer');
+          moreInfo.toggle();
+        }*/
+      </script>
+    </div>
+  </paper-card>
+  </template>
+  <script>
+  var object = Polymer({
+    is: 'competition-card',
+    properties: {
+      competitiondata: {
+        type: Object,
+      },
+      participation : {
+        type: Object,
+        value : null,
+        observer : 'participationHandler'
+      },
+      epreuves : {
+        type: Object,
+        value : null,
+        observer : 'epreuvesHandler'
+      },
+      viewicon : String,
+      viewbutton : String
+    },
+   epreuvesHandler: function(epreuves) {
+     if(epreuves!==null){
+        var inscriptionForm = Polymer.dom(this.root).querySelector('#participer');
+        inscriptionForm.toggle();
+     }
+   },
+   participationHandler: function(participation) {
+       if(participation!==null){
+         this.viewbutton = 'Modifier l\'inscription';
+         this.viewicon = 'icons:check-box';
+       }
+       else {
+         this.viewbutton = 'S\'inscrire';
+         this.viewicon = 'icons:check-box-outline-blank';
+       }
+    },
+    ready: function() {
+      this.$.inscription.addEventListener('participation',this.Listener.bind(this));
+      this.$.participationbutton.addEventListener('click',this.ParticipationListener.bind(this));
+    },
+    ParticipationListener : function (e) {
+      if (this.epreuves===null){
+        var request =  {action : 'get', table : 'events', filter :{prop : 'id', value : this.competitiondata.id}};
+        var query = { requester : this, property : 'epreuves', request :request };
+        this.fire('query', query);
+      }
+      else {
+        var inscriptionForm = Polymer.dom(this.root).querySelector('#participer');
+        inscriptionForm.toggle();
+      }
+
+    },
+    Listener : function (e) {
+      if (JSON.stringify(e.detail.courses) !== JSON.stringify({})){
+        this.participation = e.detail.courses;
+      }
+      else {
+        this.participation = null;
+      }
+      var moreInfo = this.$.participer;
+      moreInfo.toggle();
+    }
+  });
+
+  </script>
+</dom-module>

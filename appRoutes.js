@@ -38,7 +38,7 @@ var addAppRoutes = function(app){
   app.get('/',function(req,res){
     var sess = req.session;
     if(sess.name) {
-      res.redirect('/logged');
+      res.redirect('/webComponents/index.html');
     }
    else {
       res.render('login');
@@ -58,7 +58,7 @@ var addAppRoutes = function(app){
     console.log('coucou');
     var sess = req.session;
     if(sess.name) {
-     res.render('index', { title: 'indexEjs' });
+     res.redirect('/webComponents/index.html');
     } else {
       res.write('  <h1>Please login first.</h1> ');
       res.end('<a href="/">Login</a>');
