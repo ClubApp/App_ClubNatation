@@ -96,5 +96,15 @@ epreuvesDB.prototype.checkIdValidity = function(iId){
     }
   }
 };
+// property ; genre, name  = H
+epreuvesDB.prototype.matchFilter = function(iId,property,value){
+  var toreturn = false;
+  var curCategory = this.epreuves[property];
+  var ExtractedId = (iId % (curCategory.poids*10) - iId % curCategory.poids)/ curCategory.poids;
+  if (value === curCategory.tab[ExtractedId-1].name){
+    toreturn = true;
+  }
+  return toreturn;
+};
 
 exports.cst = epreuvesDB;

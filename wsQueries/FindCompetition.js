@@ -29,6 +29,7 @@ var createCmd = function(args,callBack){
     for (i=0;i<12;i++){
       if (tab[2].indexOf(mois[i])>-1){
         toreturn.mois=i+1;
+        break;
       }
     }
     if (tab.length==4){
@@ -98,8 +99,8 @@ var createCmd = function(args,callBack){
     // table 3 OU 2 = courses
     var index = 2;
     var theStr = domElements[index].textContent;
-    //console.log('FindCompetitionCmd.format '+this.id);
-    //console.log('FindCompetitionCmd.format '+theStr);
+    console.log('FindCompetitionCmd.format '+this.id);
+    console.log('FindCompetitionCmd.format '+theStr);
     if (theStr.indexOf(nages.NagesBigDetail[0])==-1){
       index = 3;
     }
@@ -107,9 +108,9 @@ var createCmd = function(args,callBack){
     if (theStr.indexOf(nages.NagesBigDetail[0])==-1){
       index = 4;
     }
-  //  console.log('FindCompetitionCmd.format '+index);
+    console.log('FindCompetitionCmd.format '+index);
     if (domElements[index]!==undefined){
-      //console.log('FindCompetitionCmd.format '+domElements[index].innerHTML);
+      console.log('FindCompetitionCmd.format '+domElements[index].innerHTML);
       var coursesTable =  domElements[index];
       var LinesNage = coursesTable.children[0].children;
       var length = LinesNage.length;

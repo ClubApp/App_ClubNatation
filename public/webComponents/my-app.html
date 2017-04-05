@@ -27,22 +27,37 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <template>
     <style>
       :host {
-        --app-primary-color: #4285f4;
-        --app-secondary-color: black;
+        --app-primary-color: #001F51;
+        --app-secondary-color: #fdd302;
 
         display: block;
       }
 
       app-header {
-        color: #fff;
+        text-align: center;
+        color: var(--app-secondary-color);
         background-color: var(--app-primary-color);
       }
       app-header paper-icon-button {
         --paper-icon-button-ink-color: white;
       }
+      app-toolbar {
+        color: var(--app-secondary-color);
+        background-color: var(--app-primary-color);
+      }
+
+      app-drawer {
+        --app-drawer-content-container: {
+           box-shadow: 1px 0 2px 1px rgba(0,0,0,0.18);
+           background-color: var(--app-primary-color);
+         }
+         --app-drawer-scrim-background: rgba(179, 157, 219, 0.5);
+      }
 
       .drawer-list {
         margin: 0 20px;
+        color: var(--app-secondary-color);
+        background-color: var(--app-primary-color);
       }
 
       .drawer-list a {
@@ -50,11 +65,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         padding: 0 16px;
         text-decoration: none;
         color: var(--app-secondary-color);
+        background-color: var(--app-primary-color);
         line-height: 40px;
       }
 
       .drawer-list a.iron-selected {
-        color: black;
+        color: white;
         font-weight: bold;
       }
     </style>
@@ -74,6 +90,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <a name="view1" href="/view1">Records</a>
           <a name="view2" href="/view2">Competitions</a>
           <a name="view3" href="/view3">Mon profil</a>
+          <a name="logout" href="/logout">Deconnection</a>
         </iron-selector>
       </app-drawer>
 
@@ -83,7 +100,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <app-header condenses reveals effects="waterfall">
           <app-toolbar>
             <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
-            <div main-title>Puteaux Natation - Masters</div>
+            <div main-title>PUTEAUX NATATION - Masters</div>
 
           </app-toolbar>
         </app-header>
@@ -126,16 +143,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       _routePageChanged: function(page) {
-        this.page = page || 'view1';
+        var pageValue = page || 'view1';
+        if (page==='webComponents'){
+          pageValue = 'view1';
+        }
+        this.page = pageValue;
 
         if (!this.$.drawer.persistent) {
           this.$.drawer.close();
         }
       },
       _pageChanged: function(page) {
-        // Load page import on demand. Show 404 page if fails
-        var resolvedPageUrl = this.resolveUrl('my-' + page + '.html');
-        this.importHref(resolvedPageUrl, null, this._showPage404, true);
+        if (page!=='logout'){
+          var resolvedPageUrl = this.resolveUrl('my-' + page + '.html');
+          this.importHref(resolvedPageUrl, null, this._showPage404, true);
+        }
+        else{
+          var xmlHttp = new XMLHttpRequest();
+          xmlHttp.open( "GET", '/logout', true ); // false for synchronous request
+          xmlHttp.send( null );
+          window.location.href="/logout";
+        }
       },
 
       _showPage404: function() {

@@ -36,7 +36,9 @@
         var pendingQuery = this._pendingQueries[answer._requestId];
         this._pendingQueries[answer._requestId] = undefined;
         var requester = pendingQuery._requester;
-        requester[pendingQuery._requesterProperty] = answer._result;
+        if (pendingQuery._requesterProperty!==undefined){
+          requester[pendingQuery._requesterProperty] = answer._result;
+        }
       },
       ready : function(){
         var me = this;

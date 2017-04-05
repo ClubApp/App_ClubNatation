@@ -5,15 +5,17 @@
 <link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="inscriptionform.html">
+<link rel="import" href="tablecomponent.html">
 <dom-module id="competition-card">
   <template>
-  <style is="custom-style">
+  <style>
   iron-icon {
     color: green;
   }
   paper-card {
+    --paper-card-header-text: {font-size : 20px};
     width: 100%;
-    --paper-card-header-image: {height: 75px};
+    --paper-card-header-image: {height: 75px;};
   }
   .horizontal {
     @apply(--layout-horizontal);
@@ -21,9 +23,13 @@
   .justified {
     @apply(--layout-justified);
   }
+  .putostyle {
+    --paper-card-header-color: #001F51;
+    background: white;
+    color:  #001F51;
+  }
   .white {
     --paper-card-header-color: white;
-
   }
   .amber {
     background: var(--paper-amber-900);
@@ -49,40 +55,25 @@
   }
 </style>
   <!--iron-ajax url="[[competitionfile]]" last-response="{{data}}" auto></iron-ajax-->
-  <paper-card heading="[[competitiondata.nom]]" image="../images/test.jpg" alt="Sailboat Harbor" class="white">
+  <paper-card heading="[[competitiondata.nom]]" alt="Sailboat Harbor" class="putostyle">
     <div class="card-content">
       <iron-icon id="participationicon" icon={{viewicon}}></iron-icon>
       [[competitiondata.date]]
     </div>
     <div class="card-actions">
       <paper-button id="participationbutton" >[[viewbutton]]</paper-button>
-      <paper-button >Participants</paper-button>
-      <paper-icon-button icon="icons:arrow-drop-down" title="more info" onclick="_toggle(event)" style="float:right;">
+      <paper-button id="participantsbutton" >Participants</paper-button>
+      <paper-icon-button id="moreinfobutton" icon="icons:arrow-drop-down" title="more info"  style="float:right;">
       </paper-icon-button>
       <iron-collapse id="participer" style="width:100%;">
-        <inscription-form id="inscription" inscriptiondata="[[epreuves]]"></inscription-form>
+        <inscription-form id="inscription" inscriptiondata="[[epreuves]]" inscriptionid="[[competitiondata.id]]"></inscription-form>
       </iron-collapse>
-      <iron-collapse id="more-info" style="width:100%;">
+      <iron-collapse id="moreinfo" style="width:100%;">
         [[competitiondata.details]]
       </iron-collapse>
-      <script>
-       //icons:check-box-outline-blank
-        //icons:check-box
-        function _toggle(event) {
-          var Button = Polymer.dom(event).localTarget;
-          var Parent = Polymer.dom(Button).parentNode;
-          var moreInfo = Polymer.dom(Parent).querySelector('#more-info');
-          iconButton.icon = moreInfo.opened ? 'icons:arrow-drop-down'
-                                            : 'icons:arrow-drop-up';
-          moreInfo.toggle();
-        }
-        /*function _toggleParticiper(event) {
-          var Button = Polymer.dom(event).localTarget;
-          var Parent = Polymer.dom(Button).parentNode;
-          var moreInfo = Polymer.dom(Parent).querySelector('#participer');
-          moreInfo.toggle();
-        }*/
-      </script>
+      <iron-collapse id="participants"  style="width:100%;">
+        <table-component id="theTable"></table-component>
+      </iron-collapse>
     </div>
   </paper-card>
   </template>
@@ -94,9 +85,14 @@
         type: Object,
       },
       participation : {
+        type: Boolean,
+        value : false,
+        observer : 'participationHandler'
+      },
+      participants : {
         type: Object,
         value : null,
-        observer : 'participationHandler'
+        observer : 'participantsHandler'
       },
       epreuves : {
         type: Object,
@@ -113,7 +109,7 @@
      }
    },
    participationHandler: function(participation) {
-       if(participation!==null){
+       if(participation!==false){
          this.viewbutton = 'Modifier l\'inscription';
          this.viewicon = 'icons:check-box';
        }
@@ -122,9 +118,25 @@
          this.viewicon = 'icons:check-box-outline-blank';
        }
     },
+    participantsHandler: function(participants) {
+      if(participants!==null){
+        var container = Polymer.dom(this.root).querySelector('#participants');
+
+        var tableData = {};
+        tableData.headerProperties = ["nom","epreuves"];
+        tableData.headerValues = ["Nom","Epreuves"];
+        tableData.width = ["50%","50%"];
+        tableData.minwidth = ["100px","100px"];
+        tableData.values = participants;
+        this.$.theTable.dataTable = tableData;
+        container.toggle();
+      }
+     },
     ready: function() {
-      this.$.inscription.addEventListener('participation',this.Listener.bind(this));
+      this.$.inscription.addEventListener('query',this.Listener.bind(this));
       this.$.participationbutton.addEventListener('click',this.ParticipationListener.bind(this));
+      this.$.moreinfobutton.addEventListener('click',this.moreinfoListener.bind(this));
+      this.$.participantsbutton.addEventListener('click',this.participantsListener.bind(this));
     },
     ParticipationListener : function (e) {
       if (this.epreuves===null){
@@ -136,14 +148,29 @@
         var inscriptionForm = Polymer.dom(this.root).querySelector('#participer');
         inscriptionForm.toggle();
       }
-
     },
-    Listener : function (e) {
-      if (JSON.stringify(e.detail.courses) !== JSON.stringify({})){
-        this.participation = e.detail.courses;
+    moreinfoListener : function (e) {
+      var moreinfo = Polymer.dom(this.root).querySelector('#moreinfo');
+      moreinfo.toggle();
+    },
+    participantsListener : function (e) {
+      if (1){//this.participants===null){
+        var request =  {action : 'get', table : 'userevents', filter :{prop : 'id', value : this.competitiondata.id}};
+        var query = { requester : this, property : 'participants', request :request };
+        this.fire('query', query);
       }
       else {
-        this.participation = null;
+        var participants = Polymer.dom(this.root).querySelector('#participants');
+        participants.toggle();
+      }
+    },
+    Listener : function (e) {
+      var request = e.detail.request;
+      if (JSON.stringify(request.data.epreuves) !== JSON.stringify([])){
+        this.participation = true;
+      }
+      else {
+        this.participation = false;
       }
       var moreInfo = this.$.participer;
       moreInfo.toggle();

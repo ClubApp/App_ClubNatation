@@ -8,7 +8,7 @@
     <iron-list id="list" items="[[competitions]]" as="competition" scroll-target="html">
       <template>
         <div class="competitionItem">
-          <competition-card id="[[competition.id]]" class="competitioncard" competitiondata="[[competition]]"> </competition-card >
+          <competition-card id="[[competition.id]]" class="competitioncard" competitiondata="[[competition]]" participation="[[competition.participation]]"> </competition-card >
         </div>
       </template>
     </iron-list>

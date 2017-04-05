@@ -13,9 +13,8 @@
         @apply(--layout-flex);
       }
     </style>
-    <form is="iron-form" method="get" action="/toto" id="participationform">
-      <div id="container" class="container flex-horizontal-with-ratios">
-      </div>
+    <form is="iron-form" method="get" id="participationform">
+      <div id="container" class="container flex-horizontal-with-ratios"></div>
       <paper-button raised onclick="_submit(event)">Valider</paper-button>
       <paper-button raised onclick="_reset(event)">Reinitialiser</paper-button>
     </form>
@@ -24,8 +23,7 @@
         Polymer.dom(event).localTarget.parentElement.submit();
       }
       function _reset(event) {
-        var form = Polymer.dom(event).localTarget.parentElement
-        form.reset();
+        Polymer.dom(event).localTarget.parentElement.reset();
       }
 
     </script>
@@ -37,6 +35,9 @@
         inscriptiondata : {
           type : Object,
           observer : 'inscriptiondataHandler'
+        },
+        inscriptionid : {
+          type : Number
         }
        },
        inscriptiondataHandler: function(inscriptiondata) {
@@ -60,18 +61,41 @@
           epreuve = inscriptiondata[i];
           nb++;
           var newCheckBox = document.createElement("paper-checkbox");
+          newCheckBox.checked = epreuve.ischecked;
           Polymer.dom(newCheckBox).innerHTML = epreuve.desc;
           Polymer.dom(newCell).appendChild(newCheckBox);
           Polymer.dom(newCheckBox).setAttribute('name', epreuve.id);
-          Polymer.dom(newCheckBox).setAttribute('value', 'false');
+          //Polymer.dom(newCheckBox).setAttribute('value', 'false');
           var theBR = document.createElement("BR");
           Polymer.dom(newCell).appendChild(theBR);
         }
       },
       ready : function(){
+        var me=this;
         this.$.participationform.addEventListener('iron-form-submit', function(event) {
           event.preventDefault();
-          this.fire('participation', {courses: event.detail});
+          var request =  {action : 'post', table : 'userevents'};
+          request.data = {};
+          request.data.epreuves = [];
+          request.data.idEvent =parseInt(me.inscriptionid);
+          var selected ;
+          for (selected in  event.detail){
+            request.data.epreuves.push(parseInt(selected));
+          }
+          var query = { requester : this, request :request };
+          console.log(JSON.stringify(request));
+          this.fire('query', query);
+        });
+        this.$.participationform.addEventListener('iron-form-reset', function(event) {
+           event.preventDefault();
+           var container = me.$.container;
+           var children = Polymer.dom(container).querySelectorAll('paper-checkbox');
+           var length = children.length;
+           var i, curChild;
+           for (i=0;i<length;i++){
+             curChild = children[i];
+             curChild.checked = false;
+           }
         });
       }
     });

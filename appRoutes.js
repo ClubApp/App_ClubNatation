@@ -41,7 +41,7 @@ var addAppRoutes = function(app){
       res.redirect('/webComponents/index.html');
     }
    else {
-      res.render('login');
+      res.redirect('/webComponents/login.html');
     }
   });
 
@@ -60,8 +60,7 @@ var addAppRoutes = function(app){
     if(sess.name) {
      res.redirect('/webComponents/index.html');
     } else {
-      res.write('  <h1>Please login first.</h1> ');
-      res.end('<a href="/">Login</a>');
+      res.redirect('/webComponents/login.html');
     }
   });
   app.get('/logout',function(req,res){

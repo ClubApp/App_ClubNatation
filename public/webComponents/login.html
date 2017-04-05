@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input-container/paper-input-container.html">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+</head>
+<style is="custom-style">
+  label {
+    margin: auto;
+    width:200px;
+    display:block;
+  }
+  input {
+    margin: auto;
+    width:200px;
+    display:block;
+  }
+  paper-button {
+    --paper-button: {
+        @apply(--layout-vertical);
+        @apply(--layout-center-center);
+      };
+      margin: auto;
+      width:200px;
+  }
+  body {
+    font-family: 'Roboto', 'Noto', sans-serif;
+    line-height: 1.5;
+    min-height: 100vh;
+    background-color: #001F51;
+    color :#fdd302 ;
+  }
+
+
+</style>
+<body>
+  <form method="post" action="../login" id="loginform">
+    <paper-input-container >
+      <label >Nom</label>
+      <input is="iron-input" type="text" id="name"></input>
+    </paper-input-container><br>
+    <paper-input-container >
+      <label >Prenom</label>
+      <input is="iron-input" type="text" id="firstname"></input>
+    </paper-input-container><br>
+    <paper-input-container >
+      <label >Mot de passe</label>
+      <input is="iron-input" type="password" id="name"></input>
+    </paper-input-container><br>
+    <paper-button raised onclick="_submit(event)">Valider</paper-button>
+  </form>
+  <script>
+  function _submit(event) {
+    name=$("#name").val();
+    firstname=$("#firstname").val();
+    pass=$("#password").val();
+    /*
+    * Perform some validation here.
+    */
+    $.post("http://localhost:3000/login",{name:name,firstname:firstname,pass:pass},function(data){
+        if(data==='done')
+        {
+            window.location.href="/logged";
+        }
+    });
+  }
+  </script>
+</body>
+</html>

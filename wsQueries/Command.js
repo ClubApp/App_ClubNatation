@@ -55,7 +55,7 @@ Command.prototype.resfreshDB = function(){
 
 Command.prototype.run  = function(callBack){
   var object = DB[this.tableName].getData(this.id);
-  if (object === undefined){
+  if (1){//object === undefined){
     this.resfreshDB();
   }
   else {

@@ -21,6 +21,8 @@ var createCmd = function(args,callBack){
   FindRecords.format = function (domElements) {
     var i = 0, j=0, k= 0;
     var objResult, objRecord;
+    objResult={};
+    objResult.records=[];
     var tabFields= ['temps', '', 'age', 'lieu', 'date'];
     var length = domElements.length;
     var thebassin;
@@ -32,9 +34,7 @@ var createCmd = function(args,callBack){
       var theParent = Elem.parentNode;
       var previousParent = theParent.previousElementSibling;
       if (previousParent.attributes.length === 0) {
-        objResult={};
         objResult.idUser = FindRecords.idUser;
-        objResult.records=[];
         temp = previousParent.previousElementSibling.textContent;
         temp = temp.indexOf('50');
         if (temp>-1){
@@ -42,23 +42,24 @@ var createCmd = function(args,callBack){
         else{
           thebassin=25; }
       }
+      //console.log('FindRecords.format bassin '+thebassin);
       DB.Epreuves.addFilter(filter, 'bassins', 'name',thebassin);
       objRecord = {};
-      objResult.records.push(objRecord);
+
       var NomNage = Elem.textContent;
+      //console.log('FindRecords.format nom nage '+NomNage);
       for (j=0;j<nages.NagesDetail.length;j++){
         if (NomNage.indexOf('Relai')>-1){
           continue;
         }
-        console.log('FindRecords.format nom nage '+NomNage);
         if (NomNage.indexOf(nages.NagesDetail[j])>-1){
-          console.log('FindRecords.format nom nage '+nages.Nages[j]);
+          //console.log('FindRecords.format nom nage '+nages.Nages[j]);
           DB.Epreuves.addFilter(filter, 'nages', 'name', nages.Nages[j]);
           var tab = nages.EprByNage[nages.Nages[j]];
           for (k=0;k<tab.length;k++){
             if (NomNage.indexOf(tab[k])>-1){
               DB.Epreuves.addFilter(filter, 'distances', 'distance',tab[k]);
-              console.log('FindRecords.format nom nage '+tab[k]);
+              //console.log('FindRecords.format distance '+tab[k]);
               break;
             }
           }
@@ -67,7 +68,7 @@ var createCmd = function(args,callBack){
       }
       //console.log('FindRecords.format '+JSON.stringify(filter));
       objRecord.epreuve = DB.Epreuves.computeEpreuveId(filter);
-      console.log('FindRecords.format '+objRecord.epreuve);
+      //console.log('FindRecords.format '+objRecord.epreuve);
       for (j = 0; j < 5; j++) {
         Elem = Elem.nextElementSibling;
         var value = Elem.textContent;
@@ -83,6 +84,8 @@ var createCmd = function(args,callBack){
         else
           objRecord[tabFields[j]] = unescape(value);
       }
+      //console.log('FindRecords.format push record '+JSON.stringify(objRecord));
+      objResult.records.push(objRecord);
     }
     return JSON.stringify(objResult);
   };

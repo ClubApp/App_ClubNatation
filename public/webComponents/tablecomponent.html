@@ -1,0 +1,111 @@
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="table-component">
+  <template>
+    <style>
+      :root{
+         --header-background-color:grey;
+         --header-color:white;
+         --even-background-color:#e0d9d9;
+         --tr-hover-background-color:green;
+      }
+      body {
+        text-align : center;
+      }
+      table {
+        border-collapse: collapse;
+        /*width : 100%;*/
+        margin-left:auto;
+        margin-right:auto;
+        margin-top:20px;
+        margin-bottom:20px;
+      }
+      table, td, th{
+        border: 1px solid black;
+      }
+      td, th {
+        padding : 8px;
+      }
+      tr:nth-child(even) {
+        background-color: var(--even-background-color);
+      }
+      tr:hover {
+        background-color: var(--tr-hover-background-color);
+      }
+      th {
+        background-color : var(--header-background-color);
+        color : var(--header-color);
+      }
+    </style>
+    <div id="container" style="overflow-x:auto;"> </div >
+  </template>
+  <script>
+    // headerProperties = ['objectProperty'], headerValues= ['objectProperty_Prez'],
+    var customTable = function (root,headerProperties, headerValues, iWidth, iMinWidth) {
+      this._headerProperties = headerProperties;
+      this._table = document.createElement('table');
+      var div = document.createElement('div');
+      Polymer.dom(div).setAttribute('style', 'overflow-x:auto;');
+      Polymer.dom(div).appendChild(this._table);
+      Polymer.dom(root).appendChild(div);
+      this.addLineInternal(headerValues, 'th', iWidth, iMinWidth);
+    }
+    // adds a string array as a line
+    customTable.prototype.addLineInternal = function (iContent, iCellType, iWidth, iMinWidth) {
+      var Line = document.createElement('tr');
+      Polymer.dom(this._table).appendChild(Line);
+      var length, i, cell, style;
+      length = iContent.length;
+      for (i = 0; i < length; i++) {
+        style = undefined;
+        cell = document.createElement(iCellType);
+        if (iWidth !== undefined) {
+          style = 'width:' + iWidth[i] + ';';
+        }
+        if (iMinWidth !== undefined) {
+          style += 'min-width:' + iMinWidth[i] + ';';
+        }
+        if (style !== undefined) {
+          Polymer.dom(cell).setAttribute('style', style);
+        }
+        Polymer.dom(Line).appendChild(cell);
+        Polymer.dom(cell).innerHTML = iContent[i];
+      }
+    }
+    // adds an object as a line
+    customTable.prototype.addLine = function (iContent) {
+      var length, i, curProp;
+      length = this._headerProperties.length;
+      var NewLineContent = [];
+      var curContent;
+      for (i = 0; i < length; i++) {
+        curProp = this._headerProperties[i];
+        curContent = iContent[curProp];
+        NewLineContent.push(curContent !== undefined ? curContent : '');
+      }
+      this.addLineInternal(NewLineContent, 'td');
+    }
+    // adds an table of objects as lines
+    customTable.prototype.addLines = function (iTableOfObjects) {
+      var length = iTableOfObjects.length, i;
+      for (i = 0; i < length; i++) {
+        this.addLine(iTableOfObjects[i]);
+      }
+    }
+    Polymer({
+      is: 'table-component',
+      properties : {
+        dataTable : {
+          type : Object,
+          observer : 'dataTableHandler'
+        }
+       },
+       dataTableHandler: function(dataTable) {
+         Polymer.dom(this.root).innerHTML='';
+         var table = new customTable(this.root, dataTable.headerProperties, dataTable.headerValues, dataTable.width, dataTable.minwidth);
+         table.addLines(dataTable.values);
+       }
+    });
+  </script>
+</dom-module>

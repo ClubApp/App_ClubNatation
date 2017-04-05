@@ -61,6 +61,7 @@ table.prototype.load = function(){
 var DataBasePath = './wsQueries/fileDataBase/';
 var Records = new table(DataBasePath+'records');
 var users = new table(DataBasePath+'users');
+var userevents = new table(DataBasePath+'userevents');
 var Competitions = new table(DataBasePath+'events');
 var eventsSumUp = new table(DataBasePath+'eventsSumUp');
 var obj;
@@ -79,6 +80,7 @@ var functionLoad = function(){
     users.load();
     Records.load();
     Competitions.load();
+    userevents.load();
     loaded  =true;
   }
 };
@@ -86,6 +88,7 @@ var functionLoad = function(){
 exports.records = Records;
 exports.users = users;
 exports.events = Competitions;
+exports.userevents = userevents;
 exports.eventsSumUp = eventsSumUp;
 exports.Epreuves = Epreuves;
 exports.save = functionSave;

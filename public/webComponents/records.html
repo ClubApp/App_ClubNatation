@@ -1,16 +1,8 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="tablecomponent.html">
 <dom-module id="records-list">
   <template>
-    <style is="custom-style">
-      .flex-horizontal-with-ratios {
-         @apply(--layout-horizontal);
-      }
-      .flexchild {
-        @apply(--layout-flex);
-      }
-    </style>
-      <div id="container" class="container flex-horizontal-with-ratios">
-     </div>
+     <table-component id="theTable"></table-component>
   </template>
   <script>
     Polymer({
@@ -30,32 +22,13 @@
          }
        },
        recordsdataHandler: function(recordsdata) {
-        var container = this.$.container;
-        var length = 0, i=0,j=0;
-
-        var Cells = [];
-        var entries = ["epreuve","temps","age","lieu","date"];
-        var length1 = entries.length;
-        for (i=0;i<length1;i++){
-          newCell = document.createElement("div");
-          Polymer.dom(newCell).setAttribute('class', 'flexchild');
-          Polymer.dom(container).appendChild(newCell);
-          var newdiv = document.createElement("div");
-          Polymer.dom(newdiv).innerHTML = entries[i];
-          Polymer.dom(newCell).appendChild(newdiv);
-          Cells.push(newCell);
-        }
-
-        length = recordsdata.length;
-        var record;
-        for (i=0;i<length;i++){
-          record = recordsdata[i];
-          for (j=0;j<length1;j++){
-            var newdiv = document.createElement("div");
-            Polymer.dom(newdiv).innerHTML = record[entries[j]];
-            Polymer.dom(Cells[j]).appendChild(newdiv);
-          }
-        }
+        var tableData = {};
+        tableData.headerProperties = ["epreuve","temps","age","lieu","date"];
+        tableData.headerValues = ["Epreuve","Temps","Age","Lieu","Date"];
+        tableData.width = ["20%","20%","20%","20%","20%"];
+        tableData.minwidth = ["100px","100px","100px","100px","100px"];
+        tableData.values = recordsdata;
+        this.$.theTable.dataTable = tableData;
       }
     });
   </script>
