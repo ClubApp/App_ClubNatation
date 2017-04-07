@@ -4,10 +4,14 @@
 <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/paper-input-container/paper-input-container.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 </head>
 <style is="custom-style">
+  :root{
+    --app-background-color:#001F51;
+    --app-color:#fdd302;
+  }
   label {
     margin: auto;
     width:200px;
@@ -21,8 +25,14 @@
   paper-button {
     --paper-button: {
         @apply(--layout-vertical);
-        @apply(--layout-center-center);
       };
+      margin: auto;
+      width:200px;
+  }
+  paper-input {
+    --paper-input-container-color:var(--app-color);
+    --paper-input-container-focus-color:white;
+    --paper-input-container-input-color:var(--app-color);
       margin: auto;
       width:200px;
   }
@@ -33,23 +43,15 @@
     background-color: #001F51;
     color :#fdd302 ;
   }
-
-
 </style>
 <body>
   <form method="post" action="../login" id="loginform">
-    <paper-input-container >
-      <label >Nom</label>
-      <input is="iron-input" type="text" id="name"></input>
-    </paper-input-container><br>
-    <paper-input-container >
-      <label >Prenom</label>
-      <input is="iron-input" type="text" id="firstname"></input>
-    </paper-input-container><br>
-    <paper-input-container >
-      <label >Mot de passe</label>
-      <input is="iron-input" type="password" id="name"></input>
-    </paper-input-container><br>
+    <paper-input always-float-label label="Nom" id="name"></paper-input>
+    <br>
+    <paper-input always-float-label label="Prenom" id="firstname"></paper-input>
+    <br>
+    <paper-input always-float-label type="password" label="Mot de passe" id="pass"></paper-input>
+    <br>
     <paper-button raised onclick="_submit(event)">Valider</paper-button>
   </form>
   <script>

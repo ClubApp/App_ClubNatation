@@ -2,6 +2,16 @@
 <link rel="import" href="tablecomponent.html">
 <dom-module id="records-list">
   <template>
+    <style>
+      table-component {
+        --table-content-margins:{
+          margin-left:5px;
+          margin-right:5px;
+          margin-top:20px;
+          margin-bottom:20px;
+        };
+      }
+    </style>
      <table-component id="theTable"></table-component>
   </template>
   <script>
