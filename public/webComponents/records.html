@@ -5,14 +5,25 @@
     <style>
       table-component {
         --table-content-margins:{
-          margin-left:5px;
-          margin-right:5px;
-          margin-top:20px;
-          margin-bottom:20px;
+          padding-left:5px;
+          padding-right:5px;
+          padding-top:20px;
+          padding-bottom:20px;
+          width:100%;
         };
       }
+      .bassinname {
+        font-weight:bold;
+        margin-top:20px;
+        color: #001F51;
+        text-align:center;
+        font-size:25px;
+      }
     </style>
-     <table-component id="theTable"></table-component>
+     <div class="bassinname">Bassin de 25 m :</div>
+     <table-component id="theTable25"></table-component>
+     <div class="bassinname">Bassin de 50 m :</div>
+     <table-component id="theTable50"></table-component>
   </template>
   <script>
     Polymer({
@@ -32,13 +43,18 @@
          }
        },
        recordsdataHandler: function(recordsdata) {
-        var tableData = {};
-        tableData.headerProperties = ["epreuve","temps","age","lieu","date"];
-        tableData.headerValues = ["Epreuve","Temps","Age","Lieu","Date"];
-        tableData.width = ["20%","20%","20%","20%","20%"];
-        tableData.minwidth = ["100px","100px","100px","100px","100px"];
-        tableData.values = recordsdata;
-        this.$.theTable.dataTable = tableData;
+        var tableData = function(){
+          this.headerProperties = ["epreuve","temps","age","lieu","date"];
+          this.headerValues = ["Epreuve","Temps","Age","Lieu","Date"];
+          this.width = ["20%","20%","10%","30%","20%"];
+          this.minwidth = ["100px","50px","150px","100px","100px"];
+        };
+        var Value25 = new tableData();
+        Value25.values = recordsdata.bassin25;
+        this.$.theTable25.dataTable = Value25;
+        var Value50 = new tableData();
+        Value50.values = recordsdata.bassin50;
+        this.$.theTable50.dataTable = Value50;
       }
     });
   </script>

@@ -26,6 +26,17 @@ function TranslateSimpleDate(iDateAsInt){
   return string;
 }
 
+function SortByDates(iobj1,iobj2){
+  var toreturn = 0;
+  if (iobj1.date>iobj2.date){
+    toreturn=1;
+  }
+  else if (iobj1.date<iobj2.date){
+    toreturn=-1;
+  }
+  return toreturn;
+}
+
 function getUserEvent(iEventId, iUserId){
   var toreturn;
   var tabEntries = DB.userevents.getData(iEventId);
@@ -108,7 +119,8 @@ function entryPoint(session, msgstr, websocket){
       var records = DB.records.getData(session.iuf);
       records = records.records;
       length = records.length;
-      var results = [];
+      var results25 = [];
+      var results50 = [];
       console.log('wsQueriesEntryPoint records '+length);
       for (i=0;i<length;i++){
         var record = records[i];
@@ -118,9 +130,17 @@ function entryPoint(session, msgstr, websocket){
         translatedRecord.date = TranslateSimpleDate(record.date);
         translatedRecord.temps = record.temps;
         translatedRecord.age = record.age;
-        results.push(translatedRecord);
+        var thebassin = DB.Epreuves.getEpreuveNameAtom(record.epreuve,'bassins','',true);
+        if (thebassin==='25'){
+          results25.push(translatedRecord);
+        }
+        else{
+          results50.push(translatedRecord);
+        }
       }
-      toreturn._result = results;
+      toreturn._result = {};
+      toreturn._result.bassin25 = results25;
+      toreturn._result.bassin50 = results50;
     }
     //{action : 'get', table : 'events', filter :{prop : 'id', value : this.competitiondata.id}
     if (request.table == "events"){
@@ -149,19 +169,27 @@ function entryPoint(session, msgstr, websocket){
         toreturn._result = obj;
       }
       else{
-        var events = DB.events.getAllData({ properties: ['nom','date', 'details', 'id']} );
-        length = events.length;
+        var events = DB.events.getAllData({ properties: ['nom','date','lieu', 'details', 'id']} );
+        var today = new Date();
+        var todayInt = today.getUTCFullYear()*10000+(today.getMonth()+1)*100+today.getUTCDate();
+        console.log(todayInt);
+        function depuisAujourdhui(element) {
+          return element.date >= todayInt;
+        }
+        var  dupevents = events.filter(depuisAujourdhui);
+        dupevents.sort(SortByDates);
+        length = dupevents.length;
         for(i=0;i<length;i++){
-          userevent = getUserEvent(events[i].id,session.iuf);
-          events[i].date = TranslateEventDate(events[i].date);
+          userevent = getUserEvent(dupevents[i].id,session.iuf);
+          dupevents[i].date = TranslateEventDate(dupevents[i].date);
           if (userevent!==undefined){
-            events[i].participation = true;
+            dupevents[i].participation = true;
           }
           else{
-            events[i].participation = false;
+            dupevents[i].participation = false;
           }
         }
-        toreturn._result = events;
+        toreturn._result = dupevents;
       }
     }
 

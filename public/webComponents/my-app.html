@@ -90,6 +90,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <a name="view1" href="/view1">Records</a>
           <a name="view2" href="/view2">Competitions</a>
           <a name="view3" href="/view3">Mon profil</a>
+          <a name="view4" href="/view4">Entrainement</a>
           <a name="logout" href="/logout">Deconnection</a>
         </iron-selector>
       </app-drawer>
@@ -113,6 +114,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <my-view1 name="view1"></my-view1>
           <my-view2 name="view2" class="queryClient"></my-view2>
           <my-view3 name="view3"></my-view3>
+          <my-view4 name="view4"></my-view4>
           <my-view404 name="view404"></my-view404>
         </iron-pages>
       </app-header-layout>
@@ -145,7 +147,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _routePageChanged: function(page) {
         var pageValue = page || 'view1';
         if (page==='webComponents'){
-          pageValue = 'view1';
+          pageValue = 'view2';
         }
         this.page = pageValue;
 

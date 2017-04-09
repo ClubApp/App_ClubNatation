@@ -70,6 +70,7 @@ var createCmd = function(args,callBack){
     // table 1 = IdCard
     var idCard =  domElements[1];
     var globalData=idCard.children[0].children[0].children[1].innerHTML;
+    console.log('FindCompetitionCmd.format'+globalData);
     globalData = globalData.replace(/<b>/ig,'');
     globalData = globalData.replace(/<\/b>/ig,'');
     globalData = globalData.replace(/<sup>/ig,'');
@@ -83,6 +84,10 @@ var createCmd = function(args,callBack){
       var value = Tab[i];
       if (i===0){//date
         value = this.buildDate(value);
+      }
+      if (i===2){//lieu
+        value = value.replace(/<div.*\/div>/ig,'');
+        console.log('FindCompetitionCmd.format lieu '+value);
       }
       if (i==3){//bassin
         if (value.indexOf(50)>-1) {
