@@ -9,10 +9,38 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="shared-styles.html">
 
 <dom-module id="my-view4">
   <template>
-    <records-list > </records-list >
+  <style include="shared-styles">
+    :host {
+      display: inline-block;
+
+      padding: 10px;
+    }
+    paper-fab {
+      --paper-fab-background:#001F51;
+      --paper-fab {
+        display: inline-block;
+      }
+    }
+
+  </style>
+
+  <div class="card">
+    Echauffement
+    <paper-fab icon="add-circle"></paper-fab>
+    <paper-fab icon="add-circle"></paper-fab>
+    <paper-fab icon="highlight-off"></paper-fab>
+  </div>
+  <div class="card">
+    Corps
+  </div>
+  <div class="card">
+    Fin
+  </div>
   </template>
   <script>
     Polymer({
