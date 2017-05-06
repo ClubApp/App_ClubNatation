@@ -1,0 +1,53 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu-light.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="distance-menu">
+  <template>
+  <style include="shared-styles">
+    paper-item {
+      width:80px;
+    }
+    paper-dropdown-menu-light {
+      --paper-dropdown-menu:{
+        height:10px;
+      };
+      --paper-dropdown-menu-button:{
+        height:10px;
+      };
+    }
+    .buttons {
+      @apply(--layout-end-justified);
+      @apply(--layout-horizontal);
+    }
+  }
+  </style>
+  <paper-dropdown-menu label="{{label}}">
+         <paper-listbox class="dropdown-content" selected="1" on-iron-select="onValueSelected">
+                 <template is="dom-repeat" items="{{values}}">
+                     <paper-item name="{{item.name}}">{{item.fullname}}</paper-item>
+                 </template>
+         </paper-listbox>
+     </paper-dropdown-menu>
+
+  </template>
+  <script>
+
+    Polymer({
+      is: 'distance-menu',
+      properties: {
+        label : String,
+        name : String,
+        values : {
+          type : Array
+        }
+      },
+      onValueSelected(e){
+        this.fire('selectedvalue',{from:this.name,value:e.detail.item.name}) ;
+      }
+    });
+  </script>
+</dom-module>

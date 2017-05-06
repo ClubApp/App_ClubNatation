@@ -1,7 +1,7 @@
 var Command = require('./Command.js');
 var DB = require('./DataBaseAccess.js');
 var nages = require('./Constants.js');
-
+//_getdata.php?idact=mtr&idtrt=prf&idiuf=1649902&idbas=25&idepr=52 = epr:cr, bas=bassin
 var createCmd = function(args,callBack){
   var http_options = {
       request: {

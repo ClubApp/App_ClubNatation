@@ -1,0 +1,161 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu-light.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="./distance-menu.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="distance-item">
+  <template>
+  <style include="shared-styles">
+    :host {
+      width:100%;
+      height : 40px;
+      padding: 10px;
+      margin: 5px;
+      border-radius: 5px;
+      background-color: lightgrey;
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+    }
+    paper-item {
+      width:80px;
+    }
+    paper-dropdown-menu-light {
+      --paper-dropdown-menu:{
+        height:10px;
+      };
+      --paper-dropdown-menu-button:{
+        height:10px;
+      };
+    }
+    .buttons {
+      @apply(--layout-end-justified);
+      @apply(--layout-horizontal);
+    }
+  }
+
+  </style>
+  <div id="menucontainer">
+  </div>
+  <div id="detailcontainer"> </div>
+
+  </template>
+  <script>
+  var  distance = [
+    { name : "10",  fullname : "10 m"  },
+    { name : "15",  fullname : "15 m"  },
+    { name : "25",  fullname : "25 m"  },
+    { name : "35",  fullname : "35 m"  },
+    { name : "50",  fullname : "50 m"  },
+    { name : "75",  fullname : "75 m"  },
+    { name : "100",  fullname : "100 m"  },
+    { name : "150",  fullname : "150 m"  },
+    { name : "200",  fullname : "200 m"  },
+    { name : "300",  fullname : "300 m"  },
+    { name : "400",  fullname : "400 m"  },
+    { name : "500",  fullname : "500 m"  },
+    { name : "600",  fullname : "600 m"  },
+    { name : "800",  fullname : "800 m"  },
+    { name : "1000",  fullname : "1000 m"  }
+  ];
+  var  nages = [
+    { name : "NL",  fullname : "Nage Libre"  },
+    { name : "BRA", fullname : "Brasse"  },
+    { name : "PAP", fullname : "Papillon"  },
+    { name : "DOS", fullname : "Dos"  },
+    { name : "MED", fullname : "4 Nages"  }
+  ];
+  var  educatifcrawl = [
+    {name: 'rattrape' , fullname : 'Rattrap&eacute' },
+    {name: 'grand_chien' , fullname : 'Grand chien' },
+    {name: 'petitchien' , fullname : 'Petit chien' },
+    {name: 'amplitude' , fullname : 'Amplitude' },
+    {name: 'mmp' , fullname : 'MMP' }
+  ];
+  var  educatifdos = [
+    {name: 'rattrape' , fullname : 'Rattrap&eacute' },
+    {name: 'amplitude' , fullname : 'Amplitude' },
+    {name: 'mmp' , fullname : 'MMP' }
+  ];
+  var  educatifbrasse = [
+    {name: 'amplitude' , fullname : 'Amplitude' },
+    {name: 'mmp' , fullname : 'MMP' }
+  ];
+  var  educatifpapillon = [
+    {name: 'amplitude' , fullname : 'Amplitude' },
+    {name: 'mmp' , fullname : 'MMP' }
+  ];
+  var  allure = [
+    {name: 'souple' , fullname : 'Souple' },
+    {name: 'moyen' , fullname : 'Moyen' },
+    {name: 'vite' , fullname : 'Vite' },
+    {name: 'sprint' , fullname : 'Sprint' },
+    {name: 'recup' , fullname : 'Recup&eacuteration' },
+    {name: '100m' , fullname : '100 m' },
+    {name: '200m' , fullname : '100 m' },
+    {name: '400m' , fullname : '100 m' },
+    {name: '800m' , fullname : '100 m' }
+  ];
+  var  materiel = [
+    {name: 'plaques' , fullname : 'Plaques' },
+    {name: 'PB' , fullname : 'Pullboy' },
+    {name: 'elastik' , fullname : 'Elastique' },
+    {name: 'planche' , fullname : 'Planche' },
+    {name: 'palmes' , fullname : 'Palmes' }
+  ];
+
+
+  var distanceElements = [
+    { name : 'repos', fullname : 'Repos'},
+    { name : 'allure', fullname : 'Allure', options : allure },
+    { name : 'educatifcrawl', fullname : 'Educatif', filter : 'NL', options : educatifcrawl },
+    { name : 'educatifdos', fullname : 'Educatif', filter : 'DOS',options : educatifdos },
+    { name : 'educatifpapillon', fullname : 'Educatif', filter : 'PAP',options : educatifpapillon },
+    { name : 'educatifbrasse', fullname : 'Educatif', filter : 'BRA',options : educatifbrasse },
+    { name : 'materiel', fullname : 'Materiel', options : materiel }
+  ];
+    Polymer({
+      is: 'distance-item',
+      properties: {
+        distance : {
+          type : String,
+          observer : 'onDistanceSelected'
+        },
+        nage : {
+          type : String,
+          observer : 'onNageSelected'
+        }
+      },
+      onDistanceSelected : function(e){
+        console.log('onDistanceSelected');
+      },
+      onNageSelected : function(e){
+        console.log('onNageSelected');
+      },
+      ready: function(){
+        this.createDropMenu('distance','Distance',this.$.menucontainer, distance, this.onDistanceSelected);
+        this.createDropMenu('nage','Nage',this.$.menucontainer, nages, this.onNageSelected);
+      },
+      createDropMenu : function (propriete,label, destination, binding, onSelectCall) {
+        var menu = document.createElement('distance-menu');
+        Polymer.dom(destination).appendChild(menu);
+        menu.addEventListener('selectedvalue',onSelectCall.bind(this));
+        menu.values = binding;
+        menu.label = label;
+        menu.name = propriete;
+      }
+
+    });
+  </script>
+</dom-module>

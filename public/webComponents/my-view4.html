@@ -10,41 +10,134 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="./distance-item.html">
+<link rel="import" href="./bloc-item.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="my-view4">
   <template>
-  <style include="shared-styles">
-    :host {
-      display: inline-block;
-
-      padding: 10px;
-    }
-    paper-fab {
-      --paper-fab-background:#001F51;
-      --paper-fab {
-        display: inline-block;
+    <style include="shared-styles">
+      :host {
+        width:100%;
+        padding: 0px;
       }
-    }
+      .trainingsection, .bloc-item, .distance-item, .trash-item  {
+        margin: 24px;
+        padding: 16px;
+        color: #757575;
+        border-radius: 5px;
+        background-color: #fff;
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+        text-align: center;
+      }
+      .trainingsection {
+        @apply(--layout-vertical);
+        @apply(--layout-justified);
+      }
+      .representants {
+              @apply(--layout-horizontal);
+              @apply(--layout-center-justified);
+      }
+      .buttons {
+        @apply(--layout-end-justified);
+        @apply(--layout-horizontal);
+      }
+    </style>
 
-  </style>
-
-  <div class="card">
-    Echauffement
-    <paper-fab icon="add-circle"></paper-fab>
-    <paper-fab icon="add-circle"></paper-fab>
-    <paper-fab icon="highlight-off"></paper-fab>
-  </div>
-  <div class="card">
-    Corps
-  </div>
-  <div class="card">
-    Fin
-  </div>
+    <div id="representants" class="representants">
+      <div id="blocitem" class="bloc-item">
+        Bloc
+      </div>
+      <div id="distanceitem" class="distance-item">
+        Distance
+      </div>
+      <div id="trashitem" class="trash-item">
+        trash
+      </div>
+    </div>
+    <div id="warmup" class="trainingsection">
+      Echauffement
+      <!--div class="buttons">
+        <paper-fab icon="add-circle"></paper-fab>
+        <paper-fab icon="add-circle"></paper-fab>
+        <paper-fab icon="highlight-off"></paper-fab!-->
+      </div>
+    </div>
+    <div id="corps" class="trainingsection">
+      Corps
+    </div>
+    <div id="fin" class="trainingsection">
+      Fin
+    </div>
   </template>
   <script>
-    Polymer({
+  function allowDrop(event) {
+    var dropTarget = (event).currentTarget;
+    var inputType = (event).dataTransfer.types[0];
+    var typeTarget = dropTarget.tagName;
+    if (typeTarget!=='distance-item'){
+          (event).preventDefault();
+    }
+  }
+  function drag(event) {
+    event.dataTransfer.setData(event.target.getAttribute('class'), event.target.id);
+  }
+  function drop(event) {
+    event.preventDefault();
+    var inputType = event.dataTransfer.types[0];
+    var data = event.dataTransfer.getData(inputType);
+    var thenode;
+    if (data=='blocitem'){
+      thenode = this.createBloc();
+    }
+    else if (data=='distanceitem'){
+      thenode = this.createDistance();
+    }
+    else{
+      thenode = document.getElementById(data);
+    }
+    if (event.currentTarget !== document.getElementById('trashitem')){
+      event.currentTarget.appendChild(thenode);
+    }
+    else if (thenode.parentElement!=null){
+      thenode.parentElement.removeChild(thenode);
+    }
+    event.stopPropagation();
+  }
+
+  var obj = Polymer({
       is: 'my-view4',
+      createDistance : function(){
+        thenode = document.createElement('distance-item');
+        thenode.setAttribute('id','distance_'+this._distanceCpt++);
+        this.addDragable(thenode);
+        return thenode;
+      },
+      createBloc : function(){
+        thenode = document.createElement('bloc-item');
+        thenode.setAttribute('id','bloc_'+this._blocCpt++);
+        this.addDragable(thenode);
+        this.addDropable(thenode);
+        return thenode;
+      },
+      addDragable : function(element){
+        element.addEventListener('dragstart',drag.bind(this) );
+        element.setAttribute('draggable','true');
+      },
+      addDropable : function(element){
+        element.addEventListener('dragover',allowDrop.bind(this) );
+        element.addEventListener('drop',drop.bind(this) );
+      },
+      ready : function(){
+        this._distanceCpt = 1;
+        this._blocCpt = 1;
+        this.addDropable(this.$.warmup);
+        this.addDropable(this.$.corps);
+        this.addDropable(this.$.fin);
+        this.addDragable(this.$.blocitem);
+        this.addDragable(this.$.distanceitem);
+        this.addDropable(this.$.trashitem);
+      }
     });
   </script>
 </dom-module>
