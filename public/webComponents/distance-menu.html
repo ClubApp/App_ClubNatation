@@ -2,18 +2,33 @@
 <link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu-light.html">
 <link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="distance-menu">
   <template>
   <style include="shared-styles">
+   :host {
+     border:2px solid;
+     padding: 5px;
+     margin : 2px;
+     display:inline-block;
+   }
     paper-item {
-      width:80px;
+        min-width:80px;
     }
-    paper-dropdown-menu-light {
+    paper-button {
+        min-width:24px;
+        width:24px;
+        margin:0px;
+        padding:0px;
+    }
+    paper-dropdown-menu {
       --paper-dropdown-menu:{
         height:10px;
+        width:110px;
       };
       --paper-dropdown-menu-button:{
         height:10px;
@@ -26,27 +41,58 @@
   }
   </style>
   <paper-dropdown-menu label="{{label}}">
-         <paper-listbox class="dropdown-content" selected="1" on-iron-select="onValueSelected">
+         <paper-listbox id="listbox" selected="0" class="dropdown-content" on-iron-select="onValueSelected">
                  <template is="dom-repeat" items="{{values}}">
                      <paper-item name="{{item.name}}">{{item.fullname}}</paper-item>
                  </template>
          </paper-listbox>
-     </paper-dropdown-menu>
+  </paper-dropdown-menu>
+  <template is="dom-if" if="{{throwable}}">
+    <paper-button id="trashbutton" onclick="onTrashButton(this)"><iron-icon icon="delete-forever"></iron-icon></paper-button>
+  </template>
 
   </template>
   <script>
+    onTrashButton = function(element){
+      element.parentElement.onThrown();
+    };
 
     Polymer({
       is: 'distance-menu',
       properties: {
         label : String,
         name : String,
+        throwable : {
+          type:Boolean,
+          value : false
+        },
         values : {
           type : Array
+        },
+        selectedvalue : {
+          type:String,
+          observer : 'selectedvaluehandler'
         }
       },
-      onValueSelected(e){
-        this.fire('selectedvalue',{from:this.name,value:e.detail.item.name}) ;
+      selectedvaluehandler: function(value){
+        var curObj;
+        for (var i in this.values){
+          curObj = this.values[i];
+          if (curObj.name===this.selectedvalue){
+            if (this.$.listbox.selected != i){
+              this.$.listbox.selected = i;
+            }
+            break;
+          }
+        }
+        console.log(value);
+      },
+      onValueSelected: function(e){
+        this.selectedvalue = e.detail.item.name;
+        this.fire('selectedvalue',{name:this.name,value:e.detail.item.name}) ;
+      },
+      onThrown: function(){
+        this.fire('thrownelement',{name:this.name}) ;
       }
     });
   </script>

@@ -42,7 +42,7 @@
       },
       ready : function(){
         var me = this;
-        this._websocket = new WebSocket('ws://localhost:3000/echo');
+        this._websocket = new WebSocket('ws://appclubnatation.hd.free.fr/echo');
         this._websocket.onerror =  function(){console.log('WebSocket error');} ;
         this._websocket.onopen =  function(){console.log('WebSocket connected');} ;
         this._websocket.onclose =  function(){console.log('WebSocket closed');} ;

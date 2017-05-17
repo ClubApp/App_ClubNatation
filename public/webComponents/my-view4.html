@@ -12,6 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="./distance-item.html">
 <link rel="import" href="./bloc-item.html">
+<link rel="import" href="./section-item.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="my-view4">
@@ -30,45 +31,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
         text-align: center;
       }
-      .trainingsection {
-        @apply(--layout-vertical);
-        @apply(--layout-justified);
-      }
       .representants {
-              @apply(--layout-horizontal);
-              @apply(--layout-center-justified);
-      }
-      .buttons {
-        @apply(--layout-end-justified);
         @apply(--layout-horizontal);
+        @apply(--layout-center-justified);
       }
     </style>
 
     <div id="representants" class="representants">
-      <div id="blocitem" class="bloc-item">
+      <div id="blocreference" class="bloc-item">
         Bloc
       </div>
-      <div id="distanceitem" class="distance-item">
+      <div id="distancereference" class="distance-item">
         Distance
       </div>
-      <div id="trashitem" class="trash-item">
+      <div id="trashreference" class="trash-item">
         trash
       </div>
     </div>
-    <div id="warmup" class="trainingsection">
-      Echauffement
-      <!--div class="buttons">
-        <paper-fab icon="add-circle"></paper-fab>
-        <paper-fab icon="add-circle"></paper-fab>
-        <paper-fab icon="highlight-off"></paper-fab!-->
-      </div>
-    </div>
-    <div id="corps" class="trainingsection">
-      Corps
-    </div>
-    <div id="fin" class="trainingsection">
-      Fin
-    </div>
+
+    <template is="dom-repeat" items="{{sections}}">
+      <section-item label="{{item.label}}" id="{{item.id}}" thechildren="{{item.children}}" class="trainingsection" on-operatemodel="operateModel" ondragover="this.allowDrop(event)" ondrop="this.drop(event)">
+      </section-item>
+    </template>
+
   </template>
   <script>
   function allowDrop(event) {
@@ -80,45 +65,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
   }
   function drag(event) {
-    event.dataTransfer.setData(event.target.getAttribute('class'), event.target.id);
+    event.dataTransfer.setData(event.target.id, event.target.id);
   }
   function drop(event) {
     event.preventDefault();
     var inputType = event.dataTransfer.types[0];
     var data = event.dataTransfer.getData(inputType);
-    var thenode;
-    if (data=='blocitem'){
-      thenode = this.createBloc();
-    }
-    else if (data=='distanceitem'){
-      thenode = this.createDistance();
-    }
-    else{
-      thenode = document.getElementById(data);
-    }
-    if (event.currentTarget !== document.getElementById('trashitem')){
-      event.currentTarget.appendChild(thenode);
-    }
-    else if (thenode.parentElement!=null){
-      thenode.parentElement.removeChild(thenode);
-    }
-    event.stopPropagation();
+    var targettype = event.currentTarget.tagName;
+    targettype = 'trash';
+    var event = {operandid :data, operandtype :inputType,targettype:targettype  };
+    this.operateModel({detail:event});
   }
 
   var obj = Polymer({
       is: 'my-view4',
+      properties : {
+        sections : Object
+      },
       createDistance : function(){
-        thenode = document.createElement('distance-item');
-        thenode.setAttribute('id','distance_'+this._distanceCpt++);
-        this.addDragable(thenode);
-        return thenode;
+        var newdistance = {nage:'NL',distance:'50', distancetype:true, id:'distance_'+this._model._distanceCpt++};
+        this._model.distanceinstance[newdistance.id]=newdistance;
+        return newdistance;
       },
       createBloc : function(){
-        thenode = document.createElement('bloc-item');
-        thenode.setAttribute('id','bloc_'+this._blocCpt++);
-        this.addDragable(thenode);
-        this.addDropable(thenode);
-        return thenode;
+        var newbloc = {repetitions:1, bloctype : true, id: 'bloc_'+this._model._blocCpt++, children : []};
+        this._model.blocinstance[newbloc.id]=newbloc;
+        return newbloc;
       },
       addDragable : function(element){
         element.addEventListener('dragstart',drag.bind(this) );
@@ -128,15 +100,43 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         element.addEventListener('dragover',allowDrop.bind(this) );
         element.addEventListener('drop',drop.bind(this) );
       },
+      getViewFromModelObject : function ( object){
+        return document.getElementById(object.id);
+      },
+      operateModel : function(event){
+        var detail = event.detail;
+        var operand;
+        if (detail.operandid==='blocreference'){
+          operand = this.createBloc();
+        }
+        else if (detail.operandid==='distancereference'){
+          operand = this.createDistance();
+        }
+        else {
+          operand = this._model[detail.operandtype][detail.operandid];
+          var oldParentView = this.getViewFromModelObject(operand.parent);
+          oldParentView.removeModelChild(operand);
+        }
+        if (detail.targettype!=='trash'){
+          var targetModelObject = this._model[detail.targettype][detail.targetid];
+          var targetView = this.getViewFromModelObject(targetModelObject);
+          targetView.addModelChild(operand);
+          operand.parent = targetModelObject;
+        }
+      },
       ready : function(){
-        this._distanceCpt = 1;
-        this._blocCpt = 1;
-        this.addDropable(this.$.warmup);
-        this.addDropable(this.$.corps);
-        this.addDropable(this.$.fin);
-        this.addDragable(this.$.blocitem);
-        this.addDragable(this.$.distanceitem);
-        this.addDropable(this.$.trashitem);
+        var warmup = {label : 'Echauffement', id : 'warmup', children:[]};
+        var corps = {label : 'Corps de seance', id : 'corps', children:[]};
+        var fin = {label : 'Fin',id : 'fin', children:[]};
+        this._model = {
+          _distanceCpt:1,   distanceinstance : {},
+          _blocCpt:1, blocinstance  : {},
+          section : {'warmup':warmup, 'corps':corps, 'fin':fin}
+        };
+        this.sections =  [warmup, corps, fin];
+        this.addDragable(this.$.blocreference);
+        this.addDragable(this.$.distancereference);
+        this.addDropable(this.$.trashreference);
       }
     });
   </script>

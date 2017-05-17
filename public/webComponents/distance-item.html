@@ -21,12 +21,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <style include="shared-styles">
     :host {
       width:100%;
-      height : 40px;
-      padding: 10px;
+      height : 100%;
+      padding: 5px;
       margin: 5px;
       border-radius: 5px;
       background-color: lightgrey;
       box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+    }
+    .container{
+      display:inline-block;
+      height : 100%;
     }
     paper-item {
       width:80px;
@@ -46,9 +50,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   }
 
   </style>
-  <div id="menucontainer">
-  </div>
-  <div id="detailcontainer"> </div>
+  <div id="menucontainer" class="container"></div>
+  <div id="detailcontainer" class="container"> </div>
+  <div id="editcontainer" class="container"> </div>
 
   </template>
   <script>
@@ -77,14 +81,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     { name : "MED", fullname : "4 Nages"  }
   ];
   var  educatifcrawl = [
-    {name: 'rattrape' , fullname : 'Rattrap&eacute' },
+    {name: 'rattrape' , fullname : 'Rattrapé' },
     {name: 'grand_chien' , fullname : 'Grand chien' },
     {name: 'petitchien' , fullname : 'Petit chien' },
     {name: 'amplitude' , fullname : 'Amplitude' },
     {name: 'mmp' , fullname : 'MMP' }
   ];
   var  educatifdos = [
-    {name: 'rattrape' , fullname : 'Rattrap&eacute' },
+    {name: 'rattrape' , fullname : 'Rattrapé' },
     {name: 'amplitude' , fullname : 'Amplitude' },
     {name: 'mmp' , fullname : 'MMP' }
   ];
@@ -101,11 +105,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     {name: 'moyen' , fullname : 'Moyen' },
     {name: 'vite' , fullname : 'Vite' },
     {name: 'sprint' , fullname : 'Sprint' },
-    {name: 'recup' , fullname : 'Recup&eacuteration' },
+    {name: 'recup' , fullname : 'Recupération' },
     {name: '100m' , fullname : '100 m' },
-    {name: '200m' , fullname : '100 m' },
-    {name: '400m' , fullname : '100 m' },
-    {name: '800m' , fullname : '100 m' }
+    {name: '200m' , fullname : '200 m' },
+    {name: '400m' , fullname : '300 m' },
+    {name: '800m' , fullname : '400 m' }
+  ];
+  var  repos = [
+    {name: '5' , fullname : '5"' },
+    {name: '10' , fullname : '10"' },
+    {name: '15' , fullname : '15"' },
+    {name: '20' , fullname : '20"' },
+    {name: '30' , fullname : '30"' },
+    {name: '40' , fullname : '40"' },
+    {name: '1\'' , fullname : '1\'' }
   ];
   var  materiel = [
     {name: 'plaques' , fullname : 'Plaques' },
@@ -114,46 +127,146 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     {name: 'planche' , fullname : 'Planche' },
     {name: 'palmes' , fullname : 'Palmes' }
   ];
+  var  variante = [
+    {name: 'jambes' , fullname : 'Jambes' },
+    {name: 'nagecomplete' , fullname : 'Nage complete' },
+    {name: 'technique' , fullname : 'Technique' },
+    {name: 'biennage' , fullname : 'Bien nage' }
+  ];
+  var  depart = [
+    {name: '10' , fullname : '10"' },
+    {name: '15' , fullname : '15"' }
+  ];
 
 
-  var distanceElements = [
-    { name : 'repos', fullname : 'Repos'},
-    { name : 'allure', fullname : 'Allure', options : allure },
-    { name : 'educatifcrawl', fullname : 'Educatif', filter : 'NL', options : educatifcrawl },
-    { name : 'educatifdos', fullname : 'Educatif', filter : 'DOS',options : educatifdos },
-    { name : 'educatifpapillon', fullname : 'Educatif', filter : 'PAP',options : educatifpapillon },
-    { name : 'educatifbrasse', fullname : 'Educatif', filter : 'BRA',options : educatifbrasse },
-    { name : 'materiel', fullname : 'Materiel', options : materiel }
+  var constraints = [
+    { name : 'aucune', fullname : 'aucune'},
+    { name : 'variante', fullname : 'Variante',options : variante},
+    { name : 'depart', fullname : 'Depart',options : depart},
+    { name : 'repos', fullname : 'Repos', options : repos},
+    { name : 'allure', fullname : 'Allure', options : allure},
+    { name : 'educatifcrawl', fullname : 'Educatif', filter : 'NL' , options : educatifcrawl},
+    { name : 'educatifdos', fullname : 'Educatif', filter : 'DOS', options : educatifdos},
+    { name : 'educatifpapillon', fullname : 'Educatif', filter : 'PAP', options : educatifpapillon },
+    { name : 'educatifbrasse', fullname : 'Educatif', filter : 'BRA' , options : educatifbrasse},
+    { name : 'materiel1', fullname : 'Materiel1', options : materiel },
+    { name : 'materiel2', fullname : 'Materiel2', options : materiel },
+    { name : 'materiel3', fullname : 'Materiel3', options : materiel }
   ];
     Polymer({
       is: 'distance-item',
       properties: {
-        distance : {
-          type : String,
-          observer : 'onDistanceSelected'
-        },
-        nage : {
-          type : String,
-          observer : 'onNageSelected'
+        data : {
+          type:Object,
+          observer : 'onDataChanged'
+        }
+      },
+      onDataChanged : function(data){
+        var menu;
+        if (this.$.menucontainer.children.length){
+          for (var value in data ){
+            if (value==='distancetype'||value==='id'||value==='parent'){
+              continue;
+            }
+            menu = this.getOrCreateDropMenuByName(value);
+            menu.selectedvalue = data[value];
+          }
         }
       },
       onDistanceSelected : function(e){
-        console.log('onDistanceSelected');
+        this.data.distance = e.detail.value;
       },
       onNageSelected : function(e){
-        console.log('onNageSelected');
+        this.data.nage = e.detail.value;
+        this.filterConstraints();
+        this.constraintMenu.values = this.currentConstraints;
+      },
+      onConstraintSelected : function(e){
+        var constrainttoadd= e.detail.value;
+        var curObj;
+        for (var i in constraints){
+          curObj = constraints[i];
+          if (curObj.name===constrainttoadd){
+            break;
+          }
+        }
+        if (curObj.options!==undefined){
+          return this.createDropMenu(constrainttoadd,curObj.fullname,this.$.detailcontainer, curObj.options, this.onConstraintValueSelected, true);
+        }
+      },
+      onConstraintValueSelected : function(e){
+        this.data[e.detail.name]=e.detail.value;
+      },
+      onThrown: function(e){
+        var thrownEltName = e.detail.name;
+        delete this.data[thrownEltName] ;
+        var detailContainer =this.$.detailcontainer;
+        var children = Polymer.dom(detailContainer).children;
+        var curChild, nameChild;
+        for (var i in children){
+          curChild = children[i];
+          nameChild = curChild.name;
+          if (nameChild==thrownEltName){
+            detailContainer.removeChild(curChild);
+            break;
+          }
+        }
+      },
+      filterConstraints : function(){
+        var curTab = [];
+        var curObj;
+        /*if (this.data!==undefined)*/{
+          for (var i in constraints){
+            curObj = constraints[i];
+            if (curObj.filter===undefined || curObj.filter===this.data.nage){
+              curTab.push(curObj);
+            }
+          }
+        }
+        this.currentConstraints = curTab;
       },
       ready: function(){
-        this.createDropMenu('distance','Distance',this.$.menucontainer, distance, this.onDistanceSelected);
-        this.createDropMenu('nage','Nage',this.$.menucontainer, nages, this.onNageSelected);
+        this.data={};
+        var initDistance = this.data!==undefined?this.data.distance:undefined;
+        this.createDropMenu('distance','Distance',this.$.menucontainer, distance, this.onDistanceSelected, false,initDistance);
+        var initNage = this.data!==undefined?this.data.nage:undefined;
+        this.createDropMenu('nage','Nage',this.$.menucontainer, nages, this.onNageSelected, false, initNage);
+        this.filterConstraints();
+        this.constraintMenu = this.createDropMenu('constraint','Contrainte',this.$.editcontainer, this.currentConstraints, this.onConstraintSelected, false,'aucune');
       },
-      createDropMenu : function (propriete,label, destination, binding, onSelectCall) {
+      createDropMenu : function (propriete,label, destination, binding, onSelectCall, isThrowable, selectedvalue) {
         var menu = document.createElement('distance-menu');
         Polymer.dom(destination).appendChild(menu);
         menu.addEventListener('selectedvalue',onSelectCall.bind(this));
+        menu.addEventListener('thrownelement',this.onThrown.bind(this));
         menu.values = binding;
         menu.label = label;
         menu.name = propriete;
+        menu.throwable = isThrowable;
+        if (selectedvalue!==undefined){
+          menu.setAttribute('selectedvalue',selectedvalue);
+        }
+        return menu;
+      },
+      getOrCreateDropMenuByName : function(name){
+        var toreturn = this.getDropMenuByName(name);
+        if (toreturn===undefined){
+           toreturn = this.onConstraintSelected({detail:{value:name}});
+        }
+        return toreturn;
+      },
+      getDropMenuByName : function(name){
+        var children = this.$.menucontainer.children, curChild;
+        for (var i in children){
+          curChild = children[i];
+          if (curChild.name===name){
+            return curChild;
+          }
+        }
+      },
+      onDragStart(event){
+        //event.preventDefault();
+        event.dataTransfer.setData('distanceinstance', event.target.id);
       }
 
     });

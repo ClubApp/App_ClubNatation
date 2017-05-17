@@ -72,6 +72,19 @@ var addAppRoutes = function(app){
       }
     });
   });
+  app.get('/view1',function(req,res){
+      res.redirect('/');
+  });
+  app.get('/view2',function(req,res){
+      res.redirect('/');
+  });
+  app.get('/view3',function(req,res){
+      res.redirect('/');
+  });
+  app.get('/view4',function(req,res){
+      res.redirect('/');
+  });
+
   app.use(function(req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;

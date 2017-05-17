@@ -1,0 +1,66 @@
+{
+  "distances" :{
+    "poids":1,
+    "tab" :[
+      { "id" : 1, "distance" : 50  , "name" : "50 m" },
+      { "id" : 2, "distance" : 100 , "name" : "100 m" },
+      { "id" : 3, "distance" : 200 , "name" : "200 m" },
+      { "id" : 4, "distance" : 400 , "name" : "400 m" },
+      { "id" : 5, "distance" : 800 , "name" : "800 m" },
+      { "id" : 6, "distance" : 1500, "name" : "1500 m"}
+    ]
+  },
+  "nages" :{
+    "poids":10,
+    "tab" :[
+      { "id" : 1, "name" : "NL",  "fullname" : "Nage Libre"  },
+      { "id" : 2, "name" : "BRA", "fullname" : "Brasse"  },
+      { "id" : 3, "name" : "PAP", "fullname" : "Papillon"  },
+      { "id" : 4, "name" : "DOS", "fullname" : "Dos"  },
+      { "id" : 5, "name" : "MED", "fullname" : "4 Nages"  }
+    ]
+  },
+  "genres" : {
+    "poids":100,
+    "tab":[
+      { "id" : 1, "name" : "H", "fullname" : "homme" },
+      { "id" : 2, "name" : "F", "fullname" : "femme" },
+      { "id" : 3, "name" : "M", "fullname" : "mixte" }
+    ]
+  },
+  "bassins": {
+    "poids":1000,
+    "tab":[
+      { "id" : 1, "name" : 25,"fullname" : "Bassin : 25 m", "epreuves":[11,12,13,14,15,16,21,22,23,31,32,33,41,42,43,52,53,54]},
+      { "id" : 2, "name" : 50,"fullname" : "Bassin : 50 m", "epreuves":[11,12,13,14,15,16,21,22,23,31,32,33,41,42,43,53,54]}
+    ]
+  },
+  "relais":{
+    "poids":10000,
+    "tab":[
+      { "id" : 1, "nbNageurs" : 4, "name" : "4*"},
+      { "id" : 2, "nbNageurs" : 10, "name" : "10*"}
+    ]
+  },
+  "validityConditions":[
+    [
+      {"property":"nages", "values":[2,3,4]},
+      {"property":"distances", "values":[1,2,3]}
+    ],
+    [
+      {"property":"nages", "values":[5]},
+      {"property":"bassins", "values":[1]},
+      {"property":"distances", "values":[2,3,4]}
+    ],
+    [
+      {"property":"nages", "values":[5]},
+      {"property":"bassins", "values":[2]},
+      {"property":"distances", "values":[3,4]}
+
+    ],
+    [
+      {"property":"genres", "values":[3]},
+      {"property":"relais", "values":[1,2]}
+    ]
+  ]
+}

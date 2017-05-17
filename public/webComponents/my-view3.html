@@ -9,6 +9,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="my-view3">
@@ -19,19 +22,56 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         padding: 10px;
       }
+      paper-input {
+        --paper-input-container-color: black;
+        --paper-input-container-focus-color: blue;
+        --paper-input-container-invalid-color: green;
+        --paper-input-container-input-color: black;
+        --paper-input-container-disabled : {
+          opacity:1;
+        }
+      }
     </style>
 
     <div class="card">
-      <div class="circle">3</div>
-      <h1>View Three</h1>
-      <p>Modus commodo minimum eum te, vero utinam assueverit per eu.</p>
-      <p>Ea duis bonorum nec, falli paulo aliquid ei eum.Has at minim mucius aliquam, est id tempor laoreet.Pro saepe pertinax ei, ad pri animal labores suscipiantur.</p>
+      <h1>Mon profil</h1>
+      <paper-input  disabled="true" label="Nom : " value="{{UserData.nom}}">
+      </paper-input>
+      <paper-input  disabled="true" label="Prenom : " value="{{UserData.prenom}}">
+      </paper-input>
+      <paper-input disabled="true" label="IUF : " value="{{UserData.iuf}}">
+      </paper-input>
+      <paper-input label="Mail : " value="{{UserData.mail}}">
+        <iron-icon icon="mail" prefix></iron-icon>
+      </paper-input>
+      <paper-input type="password" label="Mot de passe actuel : ">
+      </paper-input>
+      <paper-input type="password" label="Pour changer de mot de passe : Nouveau mot de passe : ">
+      </paper-input>
+      <paper-input type="password" label="Pour changer de mot de passe : Entrer de nouveau le Nouveau mot de passe : ">
+      </paper-input>
+      <paper-button raised >VALIDER</paper-button>
     </div>
   </template>
 
   <script>
     Polymer({
       is: 'my-view3',
+      properties : {
+        UserData : {
+          type: Object,
+          observer : 'onUserDataChanged'
+        }
+      },
+      onUserDataChanged:function(data){
+        console.log('changed)');
+      },
+      ready : function(){
+        var request =  {action : 'get', table : 'users'};
+        var query = { requester : this, property : 'UserData', request :request };
+        this.fire('query', query);
+      }
+
     });
   </script>
 </dom-module>

@@ -1,6 +1,14 @@
 var utils = require('./Utilities.js');
 var DB = require('./DataBaseAccess.js');
 
+DB.load();
+
+
+var today = new Date();
+var todayInt = today.getUTCFullYear()*10000+(today.getMonth()+1)*100+today.getUTCDate();
+var target = 'archive'+todayInt;
+utils.fileAccessor.copyFolderRecursiveSync ( DB.dbPath, target );
+
 var callBack = {};
 callBack.callBackNo = function(){
   console.log('no file');
@@ -27,7 +35,7 @@ callBack.callBackYes = function(data){
   localCallBack();
 };
 
-//utils.fileAccessor.GetData('./wsQueries/fileDataBase/ListUsers.json', callBack);
+utils.fileAccessor.GetData('./wsQueries/fileDataBase/ListUsers.json', callBack);
 
 var updateEventsSumUp = function(){
   var cmdName = 'FindCompetitions';
@@ -39,6 +47,7 @@ var updateEventsSumUp = function(){
   var cmd = cmdProto.instanciate([],localCallBack );
   cmd.run();
 };
+
 //updateEventsSumUp();
 
 
@@ -67,7 +76,7 @@ callBack2.callBackYes = function(data){
   localCallBack();
 };
 
-utils.fileAccessor.GetData('./wsQueries/fileDataBase/eventsSumUp.json', callBack2);
+//utils.fileAccessor.GetData('./wsQueries/fileDataBase/eventsSumUp.json', callBack2);
 
 var callBack3 = {};
 callBack3.callBackNo = function(){

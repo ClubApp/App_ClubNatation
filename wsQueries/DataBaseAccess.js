@@ -45,6 +45,15 @@ table.prototype.storeData = function(id, obj){
   //console.log('table.prototype.storeData '+id+' '+JSON.stringify(obj));
   var CurId = obj.id?obj.id:id;
   obj.id = CurId;
+  //we keep additional properties
+  var existingObj = this._content[CurId];
+  var prop;
+  for (prop in existingObj){
+    if (obj[prop]===undefined){
+      console.log('table.prototype.storeData '+prop);
+      obj[prop]=existingObj[prop];
+    }
+  }
   this._content[CurId] = obj;
 };
 table.prototype.save = function(){
@@ -85,6 +94,7 @@ var functionLoad = function(){
   }
 };
 
+exports.dbPath = DataBasePath;
 exports.records = Records;
 exports.users = users;
 exports.events = Competitions;

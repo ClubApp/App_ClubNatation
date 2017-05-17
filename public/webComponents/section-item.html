@@ -1,44 +1,20 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="shared-styles.html">
 
-<dom-module id="bloc-item">
+<dom-module id="section-item">
   <template>
     <style include="shared-styles">
     :host {
       height:100%;
       width:100%;
       border-radius: 5px;
-
-      @apply(--layout-horizontal);
+      @apply(--layout-vertical);
       @apply(--layout-center-justified);
       box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
     }
-    .blocreps, .bloccontent, .blocvariants {
-      height:100%;
-      min-height:80px;
-      border:solid grey 2px;
-      margin:-2px;
-      border-radius: 5px;
-    }
-    .blocreps {
-      width:40px;
-      @apply(--layout-center-justified);
-    }
-    .bloccontent {
-      width:100%;
-      @apply(--layout-vertical);
-    }
-    .blocvariants {
-      width:20px;
-    }
-    paper-input{
-      @apply(--layout-self-center);
-    }
     </style>
-    <paper-input label="Repetitions">{{data.repetitions}}</paper-input>
-    <div id="bloccontent" class="bloccontent">
-      <template is="dom-repeat" items="{{data.children}}">
+      <div>{{label}}</div>
+      <template is="dom-repeat" items="{{thechildren}}">
         <template is="dom-if" if="{{item.distancetype}}">
           <distance-item id="{{item.id}}" data="{{item}}" draggable="true" ondragstart="this.onDragStart(event)"></distance-item>
         </template>
@@ -46,28 +22,21 @@
           <bloc-item id="{{item.id}}" data="{{item}}" draggable="true" ondragstart="this.onDragStart(event)" ondragover="this.allowDrop(event)" ondrop="this.drop(event)"></bloc-item>
         </template>
       </template>
-    </div>
-    <div id="blocvariants" class="blocvariants"></div>
 
   </template>
   <script>
     Polymer({
-      is: 'bloc-item',
+      is: 'section-item',
       properties: {
-        data : Object
+        thechildren : Array,
+        label : String
       },
       addModelChild(element){
-        this.push('data.children',element);
+        this.push('thechildren',element);
       },
       removeModelChild(element){
-        var index = this.data.children.indexOf(element);
-        this.splice('data.children', index, 1);
-      },
-      onDragStart(event){
-        //event.preventDefault();
-        if (event.dataTransfer.types.length===0){
-          event.dataTransfer.setData('blocinstance', event.target.id);
-        }
+        var index = this.thechildren.indexOf(element);
+        this.splice('thechildren', index, 1);
       },
       allowDrop : function(event) {
         var dropTarget = (event).currentTarget;
@@ -82,10 +51,9 @@
         event.preventDefault();
         var inputType = event.dataTransfer.types[0];
         var data = event.dataTransfer.getData(inputType);
-        var targettype = 'blocinstance';
-        var newevent = {operandid :data, operandtype :inputType,targetid :event.currentTarget.getAttribute('id'),targettype:targettype  };
-        event.stopPropagation();
-        this.fire('operatemodel', newevent);
+        var targettype = 'section';
+        var event = {operandid :data, operandtype :inputType,targetid :event.currentTarget.getAttribute('id'),targettype:targettype  };
+        this.fire('operatemodel', event);
       }
     });
   </script>

@@ -1,7 +1,7 @@
 var DB = require('./DataBaseAccess.js');
 
 function initializeIUF(session, callBack){
-  if(session.iuf === undefined){
+  if(session.iuf === undefined&&session.name!==undefined){
     var user = DB.users.getDataWithFilter({prop:"nom", value:session.name});
     session.iuf = user.id;
     session.genre = user.genre;
@@ -28,10 +28,17 @@ function TranslateSimpleDate(iDateAsInt){
 
 function SortByDates(iobj1,iobj2){
   var toreturn = 0;
-  if (iobj1.date>iobj2.date){
+  var date1 = iobj1.date, date2 = iobj2.date;
+  if (date2!=null&&date2.length!==undefined){
+    date2 = date2[0];
+  }
+  if (date1!=null&&date1.length!==undefined){
+    date1 = date1[0];
+  }
+  if (date1>date2){
     toreturn=1;
   }
-  else if (iobj1.date<iobj2.date){
+  else if (date1<date2){
     toreturn=-1;
   }
   return toreturn;
@@ -57,13 +64,19 @@ function getUserEvent(iEventId, iUserId){
 
 function entryPoint(session, msgstr, websocket){
   DB.load();
+  var query = JSON.parse(msgstr);
+  var toreturn= {_requestId : query._requestId};
   initializeIUF(session);
+  if (session.iuf===undefined){
+    toreturn._result = 'KO';
+    var msgback = JSON.stringify(toreturn);
+    websocket.send(msgback);
+    return;
+  }
   console.log('wsQueriesEntryPoint receive '+session.iuf+' '+msgstr);
   //{ _requestId : oId, _request : {action : 'get', table : 'records', filter :{}}};
-  var query = JSON.parse(msgstr);
   var request= query._request;
   // output
-  var toreturn= {_requestId : query._requestId};
   var i, length, k, length2;
   var userevent;
   //{ request :{action : 'post', table : 'userevents', data : {epreuves[eprid], idEvent: id}} };
@@ -94,6 +107,16 @@ function entryPoint(session, msgstr, websocket){
     }
   }
   else if (request.action == "get"){
+    if (request.table == "users"){
+      var theUser = DB.users.getData(session.iuf);
+      console.log(JSON.stringify(theUser));
+      toreturn._result  = {
+        nom:theUser.nom,
+        prenom:theUser.prenom,
+        iuf:theUser.id,
+        mail:theUser.mail
+      };
+    }
     if (request.table == "userevents"){
       var values = DB.userevents.getDataWithFilter(request.filter);
       toreturn._result  = [];
@@ -172,9 +195,13 @@ function entryPoint(session, msgstr, websocket){
         var events = DB.events.getAllData({ properties: ['nom','date','lieu', 'details', 'id']} );
         var today = new Date();
         var todayInt = today.getUTCFullYear()*10000+(today.getMonth()+1)*100+today.getUTCDate();
-        console.log(todayInt);
         function depuisAujourdhui(element) {
-          return element.date >= todayInt;
+          var date = element.date;
+          if (date!=null&&date.length!==undefined){
+            date = element.date[0];
+          }
+          var toreturn = date >= todayInt;
+          return toreturn;
         }
         var  dupevents = events.filter(depuisAujourdhui);
         dupevents.sort(SortByDates);
