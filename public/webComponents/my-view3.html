@@ -9,6 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
@@ -35,23 +36,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <div class="card">
       <h1>Mon profil</h1>
+      <form is="iron-form" method="get" id="profilform">
       <paper-input  disabled="true" label="Nom : " value="{{UserData.nom}}">
       </paper-input>
       <paper-input  disabled="true" label="Prenom : " value="{{UserData.prenom}}">
       </paper-input>
       <paper-input disabled="true" label="IUF : " value="{{UserData.iuf}}">
       </paper-input>
-      <paper-input label="Mail : " value="{{UserData.mail}}">
+      <paper-input name="mail" label="Mail : " value="{{UserData.mail}}">
         <iron-icon icon="mail" prefix></iron-icon>
       </paper-input>
-      <paper-input type="password" label="Mot de passe actuel : ">
+      <paper-input name="oldpwd" type="password" label="Mot de passe actuel : ">
       </paper-input>
-      <paper-input type="password" label="Pour changer de mot de passe : Nouveau mot de passe : ">
+      <paper-input id="newpwd" name="newpwd" type="password" value="{{passwordnew}}" label="Pour changer de mot de passe : Nouveau mot de passe : ">
       </paper-input>
-      <paper-input type="password" label="Pour changer de mot de passe : Entrer de nouveau le Nouveau mot de passe : ">
+      <paper-input id="newpwd2" name="newpwd2" type="password" value="{{passwordnew2}}" label="Pour changer de mot de passe : Entrer de nouveau le Nouveau mot de passe : ">
       </paper-input>
-      <paper-button raised >VALIDER</paper-button>
+      <paper-button raised onclick="_submit(event)">VALIDER</paper-button>
+    </form>
     </div>
+    <script>
+      function _submit(event) {
+        event.preventDefault();
+        Polymer.dom(event).localTarget.parentElement.submit();
+      }
+    </script>
   </template>
 
   <script>
@@ -61,7 +70,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         UserData : {
           type: Object,
           observer : 'onUserDataChanged'
-        }
+        },
+        passwordnew : String,
+        passwordnew2 : String
       },
       onUserDataChanged:function(data){
         console.log('changed)');
@@ -70,6 +81,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var request =  {action : 'get', table : 'users'};
         var query = { requester : this, property : 'UserData', request :request };
         this.fire('query', query);
+        var me = this;
+        this.$.profilform.addEventListener('iron-form-submit', function(event) {
+           event.preventDefault();
+           var request =  {action : 'post', table : 'users'};
+           if ( event.detail.newpwd===event.detail.newpwd2){
+             request.data = { mail : event.detail.mail, password : event.detail.oldpwd,newpassword : event.detail.newpwd} ;
+             var query = { requester : this, request :request };
+             this.fire('query', query);
+           }
+          else{
+            me.$.newpwd.errorMessage = "Nouveau mot de passe différent";
+            me.$.newpwd.invalid=true;
+            me.$.newpwd2.errorMessage = "Nouveau mot de passe différent";
+            me.$.newpwd.invalid=true;
+          }
+        });
       }
 
     });

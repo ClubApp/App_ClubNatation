@@ -107,6 +107,15 @@ function entryPoint(session, msgstr, websocket){
       DB.userevents.save();
       toreturn._result = 'OK';
     }
+    else if (request.table == "users"){
+      var obj = {};
+      obj.id= session.iuf;
+      obj.mail= request.data.mail;
+      obj.password= request.data.newpassword;
+      DB.users.storeData(session.iuf,obj);
+      DB.users.save();
+      toreturn._result = 'OK';
+    }
   }
   else if (request.action == "get"){
     if (request.table == "users"){
@@ -129,13 +138,16 @@ function entryPoint(session, msgstr, websocket){
       for (i=0;i<length;i++){
         obj = {};
         curValue = values[i];
-        var theUser = DB.users.getData(curValue.idUser);
-        obj.nom = theUser.nom+' '+theUser.prenom;
+        console.log('wsQueriesEntryPoint userevents '+JSON.stringify(curValue));
+        var curUser = DB.users.getData(curValue.idUser);
+        obj.nom = curUser.nom+' '+curUser.prenom;
+        obj.transport = curValue.transport;
+        obj.places = curValue.places;
         obj.epreuves = [];
         length2 = curValue.epreuves.length;
         for (k=0;k<length2;k++){
           var epr = curValue.epreuves[k];
-          obj.epreuves.push(DB.Epreuves.getEpreuveName({id:epr, shortFormat:true}));
+          obj.epreuves.push(DB.Epreuves.getEpreuveName({id:epr.id, shortFormat:true}));
         }
         toreturn._result.push(obj);
       }

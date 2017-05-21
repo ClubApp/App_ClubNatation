@@ -96,11 +96,13 @@
       is: 'inscription-form',
       properties : {
         inscriptiondata : {
-          type : Object,
-          observer : 'idObserver'
+          type : Object
         },
         inscriptionid : {
           type : Number
+        },
+        pendingmodification : {
+          type : Boolean
         },
         transports :{
           type : Array,
@@ -121,7 +123,11 @@
           ]; }
         }
        },
-      idObserver :  function(data){
+       observers : ['_inscriptiondataObserver(inscriptiondata.*)'],
+      _inscriptiondataObserver :  function(data, filter){
+        if (data.path!=='inscriptiondata'){
+          this.pendingmodification = true;
+        }
         console.log(JSON.stringify(data));
       },
       ready : function(){
@@ -145,6 +151,7 @@
           }
           var query = { requester : this, request :request };
           console.log(JSON.stringify(request));
+          me.pendingmodification = false;
           this.fire('query', query);
         });
         this.$.participationform.addEventListener('inscriptionreset', function(event) {
