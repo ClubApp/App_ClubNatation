@@ -3,18 +3,81 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu-light.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
 <dom-module id="inscription-form">
   <template>
-    <style is="custom-style">
-      .flex-horizontal-with-ratios {
-         @apply(--layout-horizontal);
+    <style include="iron-flex iron-flex-alignment" >
+      paper-input, paper-checkbox {
+        width:130px;
+        height:40px;
       }
-      .flexchild {
-        @apply(--layout-flex);
+      paper-checkbox {
+        --paper-checkbox-label-spacing:15px;
+        --paper-checkbox-vertical-align:bottom;
+        --paper-checkbox-label : {
+          padding:0px;
+        }
       }
+      paper-input {
+        --paper-input-container : {
+          padding:0px;
+        }
+      }
+      .checkandinput {
+        @apply(--layout-horizontal);
+        @apply(--layout-center-justified);
+        padding:10px 50px 10px 50px;
+      }
+      #container {
+        border:solid 1px;
+        margin:-1px;
+      }
+      paper-item {
+        width:80px;
+      }
+      paper-dropdown-menu-light {
+        --paper-dropdown-menu:{
+          height:10px;
+        };
+        --paper-dropdown-menu-button:{
+          height:10px;
+        };
+      }
+
+
     </style>
     <form is="iron-form" method="get" id="participationform">
-      <div id="container" class="container flex-horizontal-with-ratios"></div>
+
+      <paper-dropdown-menu label="Moyen de transport">
+        <paper-listbox id="listboxtransport" selected="{{inscriptiondata.transport}}" class="dropdown-content" >
+          <template is="dom-repeat" items="{{transports}}">
+            <paper-item name="{{item.name}}">{{item.fullname}}</paper-item>
+          </template>
+        </paper-listbox>
+      </paper-dropdown-menu>
+      <paper-dropdown-menu label="Nombre de personnes que je pourrais emmener :">
+        <paper-listbox id="listboxplace" selected="{{inscriptiondata.places}}" class="dropdown-content" >
+          <template is="dom-repeat" items="{{places}}">
+            <paper-item name="{{item.name}}">{{item.fullname}}</paper-item>
+          </template>
+        </paper-listbox>
+      </paper-dropdown-menu>
+      <div id="container" class="layout horizontal wrap">
+        <template is="dom-repeat" items="{{inscriptiondata.epreuves}}">
+          <div class="checkandinput">
+          <paper-checkbox name="{{item.id}}" checked="{{item.ischecked}}">{{item.desc}}</paper-checkbox>
+          <paper-input id="time{{item.id}}" label="temps" no-label-float="true" value="{{item.time}}" disabled="{{item.withRecord}}" auto-validate pattern="[0-9]{2}:[0-9]{2}\.[0-9]{2}" error-message="Temps : XX:XX.XX!">
+            <iron-icon icon="alarm" prefix></iron-icon>
+          </paper-input>
+        </div>
+        </template>
+      </div>
+
       <paper-button raised onclick="_submit(event)">Valider</paper-button>
       <paper-button raised onclick="_reset(event)">Reinitialiser</paper-button>
     </form>
@@ -23,7 +86,7 @@
         Polymer.dom(event).localTarget.parentElement.submit();
       }
       function _reset(event) {
-        Polymer.dom(event).localTarget.parentElement.reset();
+        Polymer.dom(event).localTarget.fire('inscriptionreset',{});
       }
 
     </script>
@@ -34,68 +97,75 @@
       properties : {
         inscriptiondata : {
           type : Object,
-          observer : 'inscriptiondataHandler'
+          observer : 'idObserver'
         },
         inscriptionid : {
           type : Number
+        },
+        transports :{
+          type : Array,
+          value: function() { return [
+            {name: "0", fullname : "Pas encore défini."},
+            {name: "1", fullname : "Voiture"},
+            {name: "2", fullname : "Transports en commun"}
+          ]; }
+        },
+        places :{
+          type : Array,
+          value: function() { return [
+            {name: "0", fullname : "Aucune"},
+            {name: "1", fullname : "Une"},
+            {name: "2", fullname : "Deux"},
+            {name: "3", fullname : "Trois"},
+            {name: "4", fullname : "Quatre"}
+          ]; }
         }
        },
-       inscriptiondataHandler: function(inscriptiondata) {
-        var line = this.$.container;
-        var length = 0, i=0;
-        var epreuve;
-        var nb = 0;
-        var newCell;
-        var cells =[];
-        if (inscriptiondata!==null)
-          length = inscriptiondata.length;
-        for (i=0;i<length;i++){
-          if (nb==3) nb=0;
-          if (cells[nb]==undefined){
-            newCell = document.createElement("div");
-            Polymer.dom(newCell).setAttribute('class', 'flexchild');
-            Polymer.dom(line).appendChild(newCell);
-            cells.push(newCell);
-          }
-          else newCell = cells[nb];
-          epreuve = inscriptiondata[i];
-          nb++;
-          var newCheckBox = document.createElement("paper-checkbox");
-          newCheckBox.checked = epreuve.ischecked;
-          Polymer.dom(newCheckBox).innerHTML = epreuve.desc;
-          Polymer.dom(newCell).appendChild(newCheckBox);
-          Polymer.dom(newCheckBox).setAttribute('name', epreuve.id);
-          //Polymer.dom(newCheckBox).setAttribute('value', 'false');
-          var theBR = document.createElement("BR");
-          Polymer.dom(newCell).appendChild(theBR);
-        }
+      idObserver :  function(data){
+        console.log(JSON.stringify(data));
       },
       ready : function(){
         var me=this;
         this.$.participationform.addEventListener('iron-form-submit', function(event) {
           event.preventDefault();
+          var container = me.$.container;
           var request =  {action : 'post', table : 'userevents'};
           request.data = {};
           request.data.epreuves = [];
           request.data.idEvent =parseInt(me.inscriptionid);
+          request.data.transport = me.inscriptiondata.transport;
+          request.data.places = me.inscriptiondata.places;
           var selected ;
+          var curTime, selector;
           for (selected in  event.detail){
-            request.data.epreuves.push(parseInt(selected));
+            selector = '#time'+selected;
+            curTime =  Polymer.dom(container).querySelectorAll(selector);
+            curTime = curTime[0];
+            request.data.epreuves.push({id : parseInt(selected), time : curTime.value});
           }
           var query = { requester : this, request :request };
           console.log(JSON.stringify(request));
           this.fire('query', query);
         });
-        this.$.participationform.addEventListener('iron-form-reset', function(event) {
+        this.$.participationform.addEventListener('inscriptionreset', function(event) {
            event.preventDefault();
            var container = me.$.container;
            var children = Polymer.dom(container).querySelectorAll('paper-checkbox');
            var length = children.length;
-           var i, curChild;
+           var i, curChild, curSelector, curTime;
            for (i=0;i<length;i++){
              curChild = children[i];
+             curSelector = '#time'+curChild.name;
+             curTime =  Polymer.dom(container).querySelector(curSelector);
+             if (!curTime.disabled){
+               curTime.value = "00:00.00"
+             }
              curChild.checked = false;
            }
+           curChild = Polymer.dom(this.root).querySelector('#listboxtransport');
+           curChild.selected = '0';
+           curChild = Polymer.dom(this.root).querySelector('#listboxplace');
+           curChild.selected = '0';
         });
       }
     });

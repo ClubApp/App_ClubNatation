@@ -84,6 +84,8 @@ function entryPoint(session, msgstr, websocket){
     if (request.table == "userevents"){
       var obj = {};
       obj.idUser= session.iuf;
+      obj.transport = request.data.transport;
+      obj.places = request.data.places;
       obj.epreuves = request.data.epreuves;
       var tabEntries = DB.userevents.getData(request.data.idEvent);
       if (tabEntries===undefined){
@@ -171,25 +173,54 @@ function entryPoint(session, msgstr, websocket){
         var userdata;
         var data = DB.events.getDataWithFilter(request.filter);
         userevent = getUserEvent(request.filter.value,session.iuf);
+        var myrecords = DB.records.getData(session.iuf);
+        myrecords = myrecords.records;
+        var emptyRecord = "00:00.00";
+        var findRecord = function(idEpr){
+          var length = myrecords.length, i , curRecord;
+          //console.log('wsQueriesEntryPoint findRecord '+length);
+          for (i=0;i<length;i++){
+            curRecord = myrecords[i];
+            //console.log('wsQueriesEntryPoint findRecord '+curRecord.epreuve+' '+idEpr);
+            if (curRecord.epreuve==idEpr){
+              return curRecord.temps;
+            }
+          }
+          return emptyRecord;
+        };
         if (userevent!==undefined){
           userdata = userevent.epreuves;
         }
         var obj = [];
         length = data.epreuves.length;
+        var userRecord;
         for(i=0;i<length;i++){
           var filteredobj ={};
           filteredobj.id = data.epreuves[i];
           if (DB.Epreuves.matchFilter(filteredobj.id,'genres',session.genre)){
+            filteredobj.time = findRecord(filteredobj.id);
+            filteredobj.withRecord= true;
+            if (emptyRecord===filteredobj.time){
+              filteredobj.withRecord= false;
+            }
             filteredobj.desc = DB.Epreuves.getEpreuveName({id:data.epreuves[i], shortFormat:true});
             var ischecked = false;
-            if (userdata!==undefined && userdata.indexOf(data.epreuves[i])>-1){
-              ischecked = true;
+            if (userdata!==undefined){
+              var j=0,length2=userdata.length;
+              for (j=0;j<length2;j++){
+                if (userdata[j].id===filteredobj.id ){
+                  ischecked = true;
+                  filteredobj.time = userdata[j].time;
+                  break;
+                }
+              }
             }
             filteredobj.ischecked = ischecked;
             obj.push(filteredobj);
           }
         }
-        toreturn._result = obj;
+        var queryResult = {transport : userevent?userevent.transport:'0', places :userevent?userevent.places:'0', epreuves :obj};
+        toreturn._result = queryResult;
       }
       else{
         var events = DB.events.getAllData({ properties: ['nom','date','lieu', 'details', 'id']} );
